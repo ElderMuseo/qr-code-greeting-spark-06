@@ -1,8 +1,6 @@
 
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
-import { Button } from "@/components/ui/button";
-import { QrCode } from "lucide-react";
 
 const QRCodeDisplay = () => {
   const baseUrl = window.location.origin;
@@ -45,15 +43,6 @@ const QRCodeDisplay = () => {
         <p>Escanea este código para enviar</p>
         <p>tus preguntas a Hedy</p>
       </div>
-      
-      <Button 
-        variant="outline" 
-        className="w-full border-2 border-brand-light-purple hover:border-brand-purple hover:bg-brand-light-purple/30"
-        onClick={() => window.location.href = questionsUrl}
-      >
-        <QrCode className="mr-2 h-4 w-4" />
-        Ir a Preguntas
-      </Button>
     </div>
   );
 };

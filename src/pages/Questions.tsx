@@ -5,8 +5,6 @@ import QuestionForm from "@/components/QuestionForm";
 import ThankYouMessage from "@/components/ThankYouMessage";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const Questions = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -34,11 +32,6 @@ const Questions = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/50 to-white px-4 py-10 sm:px-6">
       <div className="container max-w-4xl mx-auto">
-        <Link to="/" className="inline-flex items-center text-brand-purple mb-6 hover:underline">
-          <ArrowLeft className="h-4 w-4 mr-1" />
-          Volver al inicio
-        </Link>
-        
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
