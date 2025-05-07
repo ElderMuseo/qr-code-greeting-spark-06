@@ -44,11 +44,11 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
           htmlFor="name" 
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          Your Name
+          Tu Nombre
         </label>
         <Input
           id="name"
-          placeholder="Enter your name"
+          placeholder="Escribe tu nombre"
           value={name}
           onChange={(e) => {
             setName(e.target.value);
@@ -57,7 +57,7 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
           className={`bg-white/70 backdrop-blur-sm border-2 ${nameError ? 'border-red-400' : 'border-brand-light-purple'} focus:border-brand-purple transition-colors`}
         />
         {nameError && (
-          <p className="text-red-500 text-xs">Please enter your name</p>
+          <p className="text-red-500 text-xs">Por favor, escribe tu nombre</p>
         )}
       </div>
       
@@ -66,11 +66,11 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
           htmlFor="question" 
           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
-          Your Question
+          Tu Pregunta
         </label>
         <Textarea
           id="question"
-          placeholder="What would you like to ask?"
+          placeholder="¿Qué quieres preguntar a Hedy?"
           value={question}
           onChange={(e) => {
             setQuestion(e.target.value);
@@ -79,7 +79,7 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
           className={`min-h-28 bg-white/70 backdrop-blur-sm resize-none border-2 ${questionError ? 'border-red-400' : 'border-brand-light-purple'} focus:border-brand-purple transition-colors`}
         />
         {questionError && (
-          <p className="text-red-500 text-xs">Please enter your question</p>
+          <p className="text-red-500 text-xs">Por favor, escribe tu pregunta</p>
         )}
       </div>
       
@@ -88,7 +88,7 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
         className="w-full bg-brand-purple hover:bg-brand-dark-purple text-white flex items-center justify-center gap-2 py-6 transition-all duration-300 shadow-md hover:shadow-lg"
       >
         <Send className="h-5 w-5" />
-        <span>Submit Question</span>
+        <span>Enviar Pregunta</span>
       </Button>
     </form>
   );

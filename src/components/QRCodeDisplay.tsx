@@ -1,49 +1,55 @@
 
-import { QrCode } from "lucide-react";
+import { useEffect, useRef } from "react";
+import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
 
 const QRCodeDisplay = () => {
   const currentUrl = window.location.href;
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Ask a Question',
-          text: 'Scan this QR code to ask a question',
-          url: currentUrl,
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
-    } else {
-      try {
-        await navigator.clipboard.writeText(currentUrl);
-        alert('URL copied to clipboard!');
-      } catch (error) {
-        console.error('Error copying to clipboard:', error);
-      }
+  useEffect(() => {
+    if (canvasRef.current) {
+      QRCode.toCanvas(
+        canvasRef.current,
+        currentUrl,
+        {
+          width: 200,
+          margin: 1,
+          color: {
+            dark: '#9b87f5',
+            light: '#FFFFFF',
+          },
+        },
+        (error) => {
+          if (error) console.error('Error generating QR code:', error);
+        }
+      );
     }
+  }, [currentUrl]);
+  
+  const handleScan = () => {
+    // This function is kept for potential future use
+    console.log("QR Code scan action");
   };
   
   return (
     <div className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md space-y-4">
       <h3 className="text-lg font-semibold text-center text-gray-800">
-        Share This Page
+        Escanea para preguntar
       </h3>
       
       <div className="flex justify-center py-4">
         <div className="p-4 border-4 border-brand-light-purple rounded-lg bg-white">
-          <QrCode className="h-32 w-32 text-brand-purple" strokeWidth={1.5} />
+          <canvas ref={canvasRef} className="h-48 w-48" />
         </div>
       </div>
       
       <Button 
-        onClick={handleShare}
+        onClick={handleScan}
         variant="outline" 
         className="w-full border-2 border-brand-light-purple hover:border-brand-purple hover:bg-brand-light-purple/30"
       >
-        Share Link
+        Escanear Código QR
       </Button>
     </div>
   );

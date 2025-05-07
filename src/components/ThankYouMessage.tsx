@@ -33,11 +33,11 @@ const ThankYouMessage = ({ name, onReset }: ThankYouMessageProps) => {
       </div>
       
       <h2 className="text-2xl font-bold text-gray-800">
-        Thank you, {name}!
+        ¡Gracias, {name}!
       </h2>
       
       <p className="text-gray-600">
-        Your question has been received. We'll get back to you soon!
+        Tu pregunta ha sido recibida. ¡Hedy la responderá pronto!
       </p>
       
       <div className="pt-4">
@@ -45,7 +45,7 @@ const ThankYouMessage = ({ name, onReset }: ThankYouMessageProps) => {
           onClick={onReset}
           className="bg-brand-purple hover:bg-brand-dark-purple text-white py-6 px-8"
         >
-          Ask Another Question ({counter})
+          Hacer Otra Pregunta ({counter})
         </Button>
       </div>
     </motion.div>

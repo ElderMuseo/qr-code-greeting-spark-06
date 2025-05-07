@@ -19,8 +19,8 @@ const Index = () => {
       setIsSubmitted(true);
       setSubmittedName(name);
       toast({
-        title: "Question Submitted",
-        description: "Thank you for your question!",
+        title: "Pregunta Enviada",
+        description: "¡Gracias por tu pregunta!",
       });
     }, 1000);
   };
@@ -39,10 +39,10 @@ const Index = () => {
           className="text-center mb-12"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            <span className="text-brand-purple">Ask</span> Us Anything
+            <span className="text-brand-purple">Preguntale</span> a Hedy
           </h1>
           <p className="text-gray-600 max-w-md mx-auto">
-            Share your questions and we'll get back to you as soon as possible.
+            Comparte tus preguntas y Hedy las responderá durante el show.
           </p>
         </motion.div>
         
