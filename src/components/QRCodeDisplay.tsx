@@ -2,16 +2,18 @@
 import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
 import { Button } from "@/components/ui/button";
+import { QrCode } from "lucide-react";
 
 const QRCodeDisplay = () => {
-  const currentUrl = window.location.href;
+  const baseUrl = window.location.origin;
+  const questionsUrl = `${baseUrl}/preguntas`;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
   useEffect(() => {
     if (canvasRef.current) {
       QRCode.toCanvas(
         canvasRef.current,
-        currentUrl,
+        questionsUrl,
         {
           width: 200,
           margin: 1,
@@ -25,12 +27,7 @@ const QRCodeDisplay = () => {
         }
       );
     }
-  }, [currentUrl]);
-  
-  const handleScan = () => {
-    // This function is kept for potential future use
-    console.log("QR Code scan action");
-  };
+  }, [questionsUrl]);
   
   return (
     <div className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md space-y-4">
@@ -44,12 +41,18 @@ const QRCodeDisplay = () => {
         </div>
       </div>
       
+      <div className="text-center text-sm text-gray-600">
+        <p>Escanea este código para enviar</p>
+        <p>tus preguntas a Hedy</p>
+      </div>
+      
       <Button 
-        onClick={handleScan}
         variant="outline" 
         className="w-full border-2 border-brand-light-purple hover:border-brand-purple hover:bg-brand-light-purple/30"
+        onClick={() => window.location.href = questionsUrl}
       >
-        Escanear Código QR
+        <QrCode className="mr-2 h-4 w-4" />
+        Ir a Preguntas
       </Button>
     </div>
   );

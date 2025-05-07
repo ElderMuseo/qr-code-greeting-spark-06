@@ -1,38 +1,11 @@
 
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import QuestionForm from "@/components/QuestionForm";
-import ThankYouMessage from "@/components/ThankYouMessage";
-import QRCodeDisplay from "@/components/QRCodeDisplay";
 import { motion } from "framer-motion";
-import { toast } from "@/hooks/use-toast";
+import QRCodeDisplay from "@/components/QRCodeDisplay";
 
 const Index = () => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [submittedName, setSubmittedName] = useState("");
-  
-  const handleSubmit = (name: string, question: string) => {
-    console.log("Submitted data:", { name, question });
-    
-    // Simulate sending data
-    setTimeout(() => {
-      setIsSubmitted(true);
-      setSubmittedName(name);
-      toast({
-        title: "Pregunta Enviada",
-        description: "¡Gracias por tu pregunta!",
-      });
-    }, 1000);
-  };
-  
-  const handleReset = () => {
-    setIsSubmitted(false);
-    setSubmittedName("");
-  };
-  
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/50 to-white px-4 py-10 sm:px-6">
-      <div className="container max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/50 to-white px-4 py-10 sm:px-6 flex flex-col items-center justify-center">
+      <div className="container max-w-4xl mx-auto text-center">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -42,35 +15,18 @@ const Index = () => {
             <span className="text-brand-purple">Preguntale</span> a Hedy
           </h1>
           <p className="text-gray-600 max-w-md mx-auto">
-            Comparte tus preguntas y Hedy las responderá durante el show.
+            Escanea el código QR para hacer tus preguntas.
           </p>
         </motion.div>
         
-        <div className="grid md:grid-cols-2 gap-8">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex justify-center"
-          >
-            <Card className="p-6 shadow-lg bg-white/90 backdrop-blur-sm w-full">
-              {!isSubmitted ? (
-                <QuestionForm onSubmit={handleSubmit} />
-              ) : (
-                <ThankYouMessage name={submittedName} onReset={handleReset} />
-              )}
-            </Card>
-          </motion.div>
-          
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex justify-center md:justify-start items-start"
-          >
-            <QRCodeDisplay />
-          </motion.div>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="flex justify-center"
+        >
+          <QRCodeDisplay />
+        </motion.div>
       </div>
     </div>
   );
