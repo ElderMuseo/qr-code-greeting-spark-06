@@ -5,23 +5,33 @@ import QuestionForm from "@/components/QuestionForm";
 import ThankYouMessage from "@/components/ThankYouMessage";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
+import { useQuestions } from "@/contexts/QuestionsContext";
 
 const Questions = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
+  const { addQuestion } = useQuestions();
   
-  const handleSubmit = (name: string, question: string) => {
+  const handleSubmit = async (name: string, question: string) => {
     console.log("Submitted data:", { name, question });
     
-    // Simulate sending data
-    setTimeout(() => {
+    // Send data to our context/service
+    try {
+      await addQuestion(name, question);
       setIsSubmitted(true);
       setSubmittedName(name);
       toast({
         title: "Pregunta Enviada",
         description: "¡Gracias por tu pregunta!",
       });
-    }, 1000);
+    } catch (error) {
+      console.error("Error submitting question:", error);
+      toast({
+        title: "Error",
+        description: "Hubo un problema al enviar tu pregunta. Por favor, inténtalo de nuevo.",
+        variant: "destructive"
+      });
+    }
   };
   
   const handleReset = () => {
