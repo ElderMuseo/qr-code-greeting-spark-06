@@ -50,13 +50,13 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
-      const { data, error } = await supabase
+      const { data, error: fetchError } = await supabase
         .from('questions')
         .select('*')
         .order('timestamp', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching questions:', error);
+      if (fetchError) {
+        console.error('Error fetching questions:', fetchError);
         setError('Failed to load questions. Please try again later.');
         toast({
           title: 'Error',
@@ -80,6 +80,11 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('An unexpected error occurred. Please try again later.');
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred',
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
@@ -99,16 +104,21 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
           table: 'questions' 
         }, 
         () => {
+          console.log('Received real-time update, refreshing questions');
           fetchQuestions();
         }
       )
       .subscribe((status) => {
+        console.log('Real-time subscription status:', status);
         if (status === 'CHANNEL_ERROR') {
           console.error('Failed to subscribe to real-time changes');
+        } else if (status === 'SUBSCRIBED') {
+          console.log('Successfully subscribed to real-time changes');
         }
       });
 
     return () => {
+      console.log('Cleaning up subscription');
       supabase.removeChannel(channel);
     };
   }, [fetchQuestions]);
@@ -117,7 +127,8 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
     const deviceId = getDeviceId();
     
     try {
-      const { error } = await supabase
+      console.log('Adding question:', { name, question, deviceId });
+      const { error: insertError, data } = await supabase
         .from('questions')
         .insert([
           {
@@ -126,10 +137,11 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
             status: 'pending',
             device_id: deviceId,
           }
-        ]);
+        ])
+        .select();
 
-      if (error) {
-        console.error('Error adding question:', error);
+      if (insertError) {
+        console.error('Error adding question:', insertError);
         toast({
           title: 'Error',
           description: 'Failed to submit your question',
@@ -138,11 +150,17 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      console.log('Question added successfully:', data);
+      toast({
+        title: 'Success',
+        description: 'Your question has been submitted',
+      });
+      
       // Refresh questions after adding
       fetchQuestions();
       
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Unexpected error during addQuestion:', err);
       toast({
         title: 'Error',
         description: 'An unexpected error occurred',
@@ -153,13 +171,14 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
 
   const updateQuestionStatus = async (id: string, status: QuestionStatus) => {
     try {
-      const { error } = await supabase
+      console.log('Updating question status:', { id, status });
+      const { error: updateError } = await supabase
         .from('questions')
         .update({ status })
         .eq('id', id);
 
-      if (error) {
-        console.error('Error updating question status:', error);
+      if (updateError) {
+        console.error('Error updating question status:', updateError);
         toast({
           title: 'Error',
           description: 'Failed to update question status',
@@ -168,6 +187,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
+      console.log('Question status updated successfully');
       // Refresh questions after updating
       fetchQuestions();
       
@@ -183,12 +203,18 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
       });
       
     } catch (err) {
-      console.error('Unexpected error:', err);
+      console.error('Unexpected error during updateQuestionStatus:', err);
+      toast({
+        title: 'Error',
+        description: 'An unexpected error occurred while updating the question',
+        variant: 'destructive',
+      });
     }
   };
 
   // Function to refresh questions from Supabase
   const refreshQuestions = useCallback(() => {
+    console.log('Manually refreshing questions');
     fetchQuestions();
   }, [fetchQuestions]);
 

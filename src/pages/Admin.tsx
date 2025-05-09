@@ -16,18 +16,20 @@ const Admin = () => {
     getPendingQuestions, 
     getApprovedQuestions, 
     getRejectedQuestions,
-    refreshQuestions
+    refreshQuestions,
+    loading,
+    error
   } = useQuestions();
 
   const pendingQuestions = getPendingQuestions();
   const approvedQuestions = getApprovedQuestions();
   const rejectedQuestions = getRejectedQuestions();
 
-  // Auto refresh questions every 10 seconds
+  // Auto refresh questions every 30 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
       refreshQuestions();
-    }, 10000); // 10 seconds
+    }, 30000); // 30 seconds
 
     return () => clearInterval(intervalId);
   }, [refreshQuestions]);
@@ -85,6 +87,9 @@ const Admin = () => {
                 <AdminQuestionList 
                   questions={pendingQuestions}
                   emptyMessage="No hay preguntas pendientes."
+                  isLoading={loading}
+                  error={error}
+                  onRefresh={handleManualRefresh}
                 />
               </TabsContent>
               
@@ -92,6 +97,9 @@ const Admin = () => {
                 <AdminQuestionList 
                   questions={approvedQuestions}
                   emptyMessage="No hay preguntas aprobadas."
+                  isLoading={loading}
+                  error={error}
+                  onRefresh={handleManualRefresh}
                 />
               </TabsContent>
               
@@ -99,6 +107,9 @@ const Admin = () => {
                 <AdminQuestionList 
                   questions={rejectedQuestions}
                   emptyMessage="No hay preguntas rechazadas."
+                  isLoading={loading}
+                  error={error}
+                  onRefresh={handleManualRefresh}
                 />
               </TabsContent>
             </Tabs>
