@@ -7,7 +7,7 @@ import { getFirestore } from 'firebase/firestore';
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: "AIzaSyC58Xg0LWO82PgA1fKh3eMBXTkyghSAM4Q",
   authDomain: "qr-questions-hedy.firebaseapp.com",
   projectId: "qr-questions-hedy",
   storageBucket: "qr-questions-hedy.firebasestorage.app",
