@@ -16,20 +16,18 @@ const Admin = () => {
     getPendingQuestions, 
     getApprovedQuestions, 
     getRejectedQuestions,
-    refreshQuestions,
-    loading,
-    error
+    refreshQuestions
   } = useQuestions();
 
   const pendingQuestions = getPendingQuestions();
   const approvedQuestions = getApprovedQuestions();
   const rejectedQuestions = getRejectedQuestions();
 
-  // Auto refresh questions every 30 seconds
+  // Auto refresh questions every 10 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
       refreshQuestions();
-    }, 30000); // 30 seconds
+    }, 10000); // 10 seconds
 
     return () => clearInterval(intervalId);
   }, [refreshQuestions]);
@@ -43,13 +41,6 @@ const Admin = () => {
     });
     setTimeout(() => setIsRefreshing(false), 600);
   };
-
-  let emptyMessage = "No hay preguntas pendientes.";
-  if (error) {
-    emptyMessage = "No se pudieron cargar las preguntas. Por favor, inténtalo de nuevo más tarde.";
-  } else if (loading) {
-    emptyMessage = "Cargando preguntas...";
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/30 to-white p-4">
@@ -69,7 +60,7 @@ const Admin = () => {
               size="sm"
               className="flex items-center gap-1"
               onClick={handleManualRefresh}
-              disabled={isRefreshing || loading}
+              disabled={isRefreshing}
             >
               <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span>Actualizar</span>
@@ -93,30 +84,21 @@ const Admin = () => {
               <TabsContent value="pending">
                 <AdminQuestionList 
                   questions={pendingQuestions}
-                  emptyMessage={emptyMessage}
-                  isLoading={loading}
-                  error={error}
-                  onRefresh={handleManualRefresh}
+                  emptyMessage="No hay preguntas pendientes."
                 />
               </TabsContent>
               
               <TabsContent value="approved">
                 <AdminQuestionList 
                   questions={approvedQuestions}
-                  emptyMessage={error ? emptyMessage : "No hay preguntas aprobadas."}
-                  isLoading={loading}
-                  error={error}
-                  onRefresh={handleManualRefresh}
+                  emptyMessage="No hay preguntas aprobadas."
                 />
               </TabsContent>
               
               <TabsContent value="rejected">
                 <AdminQuestionList 
                   questions={rejectedQuestions}
-                  emptyMessage={error ? emptyMessage : "No hay preguntas rechazadas."}
-                  isLoading={loading}
-                  error={error}
-                  onRefresh={handleManualRefresh}
+                  emptyMessage="No hay preguntas rechazadas."
                 />
               </TabsContent>
             </Tabs>

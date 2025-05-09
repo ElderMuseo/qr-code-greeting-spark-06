@@ -4,27 +4,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuestions, Question, QuestionStatus } from "@/contexts/QuestionsContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Check, X, RefreshCcw } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface AdminQuestionListProps {
   questions: Question[];
   emptyMessage: string;
-  isLoading?: boolean;
-  error?: string | null;
-  onRefresh?: () => void;
 }
 
-const AdminQuestionList = ({ 
-  questions, 
-  emptyMessage, 
-  isLoading = false, 
-  error = null,
-  onRefresh 
-}: AdminQuestionListProps) => {
+const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) => {
   const { updateQuestionStatus } = useQuestions();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -36,54 +25,6 @@ const AdminQuestionList = ({
       setProcessingId(null);
     }
   };
-
-  // Show loading skeletons
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
-          <Card key={i} className="bg-white/90 backdrop-blur-sm">
-            <CardContent className="pt-6">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex-1">
-                  <Skeleton className="h-6 w-1/4 mb-2" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4 mt-2" />
-                </div>
-                <Skeleton className="h-4 w-20" />
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2 border-t pt-4">
-              <Skeleton className="h-9 w-24" />
-              <Skeleton className="h-9 w-24" />
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  // Show error message
-  if (error) {
-    return (
-      <Alert variant="destructive" className="mb-4">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription className="flex flex-col gap-2">
-          <p>{error}</p>
-          {onRefresh && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="self-start flex items-center gap-1"
-              onClick={onRefresh}
-            >
-              <RefreshCcw className="h-4 w-4 mr-1" /> Intentar nuevamente
-            </Button>
-          )}
-        </AlertDescription>
-      </Alert>
-    );
-  }
 
   return (
     <div className="space-y-4">
