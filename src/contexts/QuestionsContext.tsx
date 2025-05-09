@@ -23,6 +23,8 @@ interface QuestionsContextType {
   getRejectedQuestions: () => Question[];
   getAllQuestions: () => Question[];
   refreshQuestions: () => void;
+  loading: boolean;
+  error: string | null;
 }
 
 const QuestionsContext = createContext<QuestionsContextType | undefined>(undefined);
@@ -40,10 +42,13 @@ const getDeviceId = () => {
 export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch questions from Supabase
   const fetchQuestions = useCallback(async () => {
     setLoading(true);
+    setError(null);
+    
     try {
       const { data, error } = await supabase
         .from('questions')
@@ -52,6 +57,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
 
       if (error) {
         console.error('Error fetching questions:', error);
+        setError('Failed to load questions. Please try again later.');
         toast({
           title: 'Error',
           description: 'Failed to load questions',
@@ -73,6 +79,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (err) {
       console.error('Unexpected error:', err);
+      setError('An unexpected error occurred. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -82,7 +89,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     fetchQuestions();
 
-    // Subscribe to real-time changes (optional enhancement)
+    // Subscribe to real-time changes
     const channel = supabase
       .channel('public:questions')
       .on('postgres_changes', 
@@ -95,7 +102,11 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
           fetchQuestions();
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error('Failed to subscribe to real-time changes');
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
@@ -196,7 +207,9 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
         getApprovedQuestions,
         getRejectedQuestions,
         getAllQuestions,
-        refreshQuestions
+        refreshQuestions,
+        loading,
+        error
       }}
     >
       {children}
