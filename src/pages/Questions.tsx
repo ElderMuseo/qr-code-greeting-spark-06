@@ -5,19 +5,23 @@ import QuestionForm from "@/components/QuestionForm";
 import ThankYouMessage from "@/components/ThankYouMessage";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
-import { useQuestions } from "@/contexts/QuestionsContext";
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const Questions = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
-  const { addQuestion } = useQuestions();
   
   const handleSubmit = async (name: string, question: string) => {
     console.log("Submitted data:", { name, question });
-    
-    // Send data to our context/service
+    // Send data to Firestore
     try {
-      await addQuestion(name, question);
+      await addDoc(collection(db, 'questions'), {
+        name,
+        question,
+        status: 'pending',
+        timestamp: serverTimestamp(),
+      });
       setIsSubmitted(true);
       setSubmittedName(name);
       toast({

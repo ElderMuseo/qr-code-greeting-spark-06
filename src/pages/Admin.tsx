@@ -1,8 +1,10 @@
+// src/pages/Admin.tsx
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useQuestions } from "@/contexts/QuestionsContext";
+import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { db } from "../firebase";
 import AdminQuestionList from "@/components/AdminQuestionList";
 import AdminHeader from "@/components/AdminHeader";
 import { RefreshCcw } from "lucide-react";
@@ -12,41 +14,61 @@ import { toast } from "@/hooks/use-toast";
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const { 
-    getPendingQuestions, 
-    getApprovedQuestions, 
-    getRejectedQuestions,
-    refreshQuestions
-  } = useQuestions();
 
-  const pendingQuestions = getPendingQuestions();
-  const approvedQuestions = getApprovedQuestions();
-  const rejectedQuestions = getRejectedQuestions();
+  // Estados locales para cada pestaña
+  const [pendingQuestions, setPending] = useState<any[]>([]);
+  const [approvedQuestions, setApproved] = useState<any[]>([]);
+  const [rejectedQuestions, setRejected] = useState<any[]>([]);
 
-  // Auto refresh questions every 10 seconds
+  // Listener en tiempo real de Firestore
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      refreshQuestions();
-    }, 10000); // 10 seconds
+    const col = collection(db, "questions");
 
-    return () => clearInterval(intervalId);
-  }, [refreshQuestions]);
+    const qPending = query(
+      col,
+      where("status", "==", "pending"),
+      orderBy("timestamp", "desc")
+    );
+    const qApproved = query(
+      col,
+      where("status", "==", "approved"),
+      orderBy("timestamp", "desc")
+    );
+    const qRejected = query(
+      col,
+      where("status", "==", "rejected"),
+      orderBy("timestamp", "desc")
+    );
+
+    const unsubPending = onSnapshot(qPending, (snap) =>
+      setPending(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    );
+    const unsubApproved = onSnapshot(qApproved, (snap) =>
+      setApproved(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    );
+    const unsubRejected = onSnapshot(qRejected, (snap) =>
+      setRejected(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
+    );
+
+    return () => {
+      unsubPending();
+      unsubApproved();
+      unsubRejected();
+    };
+  }, []);
 
   const handleManualRefresh = () => {
-    setIsRefreshing(true);
-    refreshQuestions();
     toast({
       title: "Actualizado",
-      description: "Las preguntas han sido actualizadas."
+      description: "Las preguntas se refrescaron automáticamente.",
     });
-    setTimeout(() => setIsRefreshing(false), 600);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/30 to-white p-4">
       <div className="container max-w-6xl mx-auto">
         <AdminHeader />
-        
+
         <Card className="mt-6 shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -55,8 +77,8 @@ const Admin = () => {
                 Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
               </CardDescription>
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               className="flex items-center gap-1"
               onClick={handleManualRefresh}
@@ -67,7 +89,11 @@ const Admin = () => {
             </Button>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="pending" value={activeTab} onValueChange={setActiveTab}>
+            <Tabs
+              defaultValue="pending"
+              value={activeTab}
+              onValueChange={setActiveTab}
+            >
               <TabsList className="mb-6 grid grid-cols-3 w-full max-w-md">
                 <TabsTrigger value="pending" className="relative">
                   Pendientes
@@ -80,23 +106,23 @@ const Admin = () => {
                 <TabsTrigger value="approved">Aprobadas</TabsTrigger>
                 <TabsTrigger value="rejected">Rechazadas</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="pending">
-                <AdminQuestionList 
+                <AdminQuestionList
                   questions={pendingQuestions}
                   emptyMessage="No hay preguntas pendientes."
                 />
               </TabsContent>
-              
+
               <TabsContent value="approved">
-                <AdminQuestionList 
+                <AdminQuestionList
                   questions={approvedQuestions}
                   emptyMessage="No hay preguntas aprobadas."
                 />
               </TabsContent>
-              
+
               <TabsContent value="rejected">
-                <AdminQuestionList 
+                <AdminQuestionList
                   questions={rejectedQuestions}
                   emptyMessage="No hay preguntas rechazadas."
                 />

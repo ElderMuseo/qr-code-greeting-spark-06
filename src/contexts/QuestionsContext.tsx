@@ -38,32 +38,10 @@ const getDeviceId = () => {
 // This is a mock implementation that would be replaced with real backend integration
 export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
   const [questions, setQuestions] = useState<Question[]>(() => {
-    // Try to load from localStorage for persistence between refreshes
     const savedQuestions = localStorage.getItem('questions');
-    return savedQuestions ? JSON.parse(savedQuestions) : [
-      {
-        id: '1',
-        name: 'Ana García',
-        question: '¿Cómo empezaste tu carrera en tecnología?',
-        status: 'pending',
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: '2',
-        name: 'Miguel Rodríguez',
-        question: '¿Qué consejo le darías a alguien que recién comienza en este campo?',
-        status: 'approved',
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: '3',
-        name: 'Laura Martínez',
-        question: '¿Cuál ha sido el mayor desafío en tu carrera?',
-        status: 'pending',
-        timestamp: new Date().toISOString(),
-      }
-    ];
+    return savedQuestions ? JSON.parse(savedQuestions) : [];
   });
+  
 
   // Save to localStorage whenever questions change
   useEffect(() => {
