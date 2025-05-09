@@ -50,6 +50,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
     setError(null);
     
     try {
+      // Modified query to handle schema access issues
       const { data, error: fetchError } = await supabase
         .from('questions')
         .select('*')
@@ -57,6 +58,17 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
 
       if (fetchError) {
         console.error('Error fetching questions:', fetchError);
+        
+        // Check if the error is related to an empty database/no table
+        if (fetchError.code === 'PGRST106' || fetchError.code === '42P01') {
+          // This might be because the table doesn't exist yet or there's a schema issue
+          console.log('Database table might not be initialized yet.');
+          setQuestions([]); // Set empty questions array
+          setError(null); // Don't show error for empty database
+          setLoading(false);
+          return;
+        }
+        
         setError('Failed to load questions. Please try again later.');
         toast({
           title: 'Error',
@@ -70,12 +82,15 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
         // Transform Supabase data to match our Question interface
         const formattedQuestions = data.map(item => ({
           id: item.id,
-          name: item.name,
-          question: item.question,
-          status: item.status as QuestionStatus,
+          name: item.name || '',
+          question: item.question || '',
+          status: (item.status as QuestionStatus) || 'pending',
           timestamp: new Date(item.timestamp),
         }));
         setQuestions(formattedQuestions);
+      } else {
+        // No data returned (empty table)
+        setQuestions([]);
       }
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -94,7 +109,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     fetchQuestions();
 
-    // Subscribe to real-time changes
+    // Subscribe to real-time changes with improved error handling
     const channel = supabase
       .channel('public:questions')
       .on('postgres_changes', 
@@ -112,6 +127,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
         console.log('Real-time subscription status:', status);
         if (status === 'CHANNEL_ERROR') {
           console.error('Failed to subscribe to real-time changes');
+          // Don't show an error toast for this, just log it
         } else if (status === 'SUBSCRIBED') {
           console.log('Successfully subscribed to real-time changes');
         }

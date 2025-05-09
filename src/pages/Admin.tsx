@@ -44,6 +44,13 @@ const Admin = () => {
     setTimeout(() => setIsRefreshing(false), 600);
   };
 
+  let emptyMessage = "No hay preguntas pendientes.";
+  if (error) {
+    emptyMessage = "No se pudieron cargar las preguntas. Por favor, inténtalo de nuevo más tarde.";
+  } else if (loading) {
+    emptyMessage = "Cargando preguntas...";
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/30 to-white p-4">
       <div className="container max-w-6xl mx-auto">
@@ -62,7 +69,7 @@ const Admin = () => {
               size="sm"
               className="flex items-center gap-1"
               onClick={handleManualRefresh}
-              disabled={isRefreshing}
+              disabled={isRefreshing || loading}
             >
               <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span>Actualizar</span>
@@ -86,7 +93,7 @@ const Admin = () => {
               <TabsContent value="pending">
                 <AdminQuestionList 
                   questions={pendingQuestions}
-                  emptyMessage="No hay preguntas pendientes."
+                  emptyMessage={emptyMessage}
                   isLoading={loading}
                   error={error}
                   onRefresh={handleManualRefresh}
@@ -96,7 +103,7 @@ const Admin = () => {
               <TabsContent value="approved">
                 <AdminQuestionList 
                   questions={approvedQuestions}
-                  emptyMessage="No hay preguntas aprobadas."
+                  emptyMessage={error ? emptyMessage : "No hay preguntas aprobadas."}
                   isLoading={loading}
                   error={error}
                   onRefresh={handleManualRefresh}
@@ -106,7 +113,7 @@ const Admin = () => {
               <TabsContent value="rejected">
                 <AdminQuestionList 
                   questions={rejectedQuestions}
-                  emptyMessage="No hay preguntas rechazadas."
+                  emptyMessage={error ? emptyMessage : "No hay preguntas rechazadas."}
                   isLoading={loading}
                   error={error}
                   onRefresh={handleManualRefresh}
