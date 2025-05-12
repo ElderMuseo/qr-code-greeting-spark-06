@@ -8,7 +8,7 @@ import { collection, onSnapshot, query, where, orderBy } from "firebase/firestor
 import { db } from "../firebase";
 import AdminQuestionList from "@/components/AdminQuestionList";
 import AdminHeader from "@/components/AdminHeader";
-import { RefreshCcw, LogOut } from "lucide-react";
+import { RefreshCcw, LogOut, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
@@ -78,6 +78,14 @@ const Admin = () => {
     });
   };
 
+  const handleDeleteAllQuestions = () => {
+    // Esta función estará vacía por ahora
+    toast({
+      title: "Función no implementada",
+      description: "La eliminación de preguntas se hará manualmente.",
+    });
+  };
+
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/admin-login" replace />;
@@ -106,6 +114,15 @@ const Admin = () => {
               >
                 <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span>Actualizar</span>
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={handleDeleteAllQuestions}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Borrar todo</span>
               </Button>
               <Button
                 variant="destructive"
