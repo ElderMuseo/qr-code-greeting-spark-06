@@ -1,3 +1,4 @@
+
 // src/pages/Admin.tsx
 
 import React, { useState, useEffect } from "react";
@@ -7,13 +8,16 @@ import { collection, onSnapshot, query, where, orderBy } from "firebase/firestor
 import { db } from "../firebase";
 import AdminQuestionList from "@/components/AdminQuestionList";
 import AdminHeader from "@/components/AdminHeader";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { useAdminAuth } from "@/contexts/AdminAuthContext";
+import { Navigate } from "react-router-dom";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { isAuthenticated, logout } = useAdminAuth();
 
   // Estados locales para cada pestaña
   const [pendingQuestions, setPending] = useState<any[]>([]);
@@ -22,6 +26,8 @@ const Admin = () => {
 
   // Listener en tiempo real de Firestore
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     const col = collection(db, "questions");
 
     const qPending = query(
@@ -55,7 +61,7 @@ const Admin = () => {
       unsubApproved();
       unsubRejected();
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const handleManualRefresh = () => {
     toast({
@@ -63,6 +69,19 @@ const Admin = () => {
       description: "Las preguntas se refrescaron automáticamente.",
     });
   };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Sesión cerrada",
+      description: "Has cerrado sesión correctamente.",
+    });
+  };
+
+  // Redirect to login if not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to="/admin-login" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/30 to-white p-4">
@@ -77,16 +96,27 @@ const Admin = () => {
                 Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
               </CardDescription>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-1"
-              onClick={handleManualRefresh}
-              disabled={isRefreshing}
-            >
-              <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>Actualizar</span>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={handleManualRefresh}
+                disabled={isRefreshing}
+              >
+                <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span>Actualizar</span>
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="flex items-center gap-1"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Cerrar sesión</span>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <Tabs
