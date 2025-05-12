@@ -13,7 +13,7 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefin
 // In a real application, these would be stored in a secure database with proper hashing
 const ADMIN_USERNAME = "admin";
 // Using a strong password for demo purposes
-const ADMIN_PASSWORD = "Secure_Admin_P@ssw0rd!";
+const ADMIN_PASSWORD = "99779977";
 
 export const AdminAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
