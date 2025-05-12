@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 const Questions = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
-  const [hasSubmittedBefore, setHasSubmittedBefore] = useState(false);
+  const [hasSubmittedToday, setHasSubmittedToday] = useState(false);
   const { addQuestion } = useQuestions();
   
   // Generate a device ID if it doesn't exist
@@ -21,14 +21,18 @@ const Questions = () => {
       localStorage.setItem("device_id", uuidv4());
     }
     
-    // Check if this device has already submitted a question
-    const hasSubmitted = localStorage.getItem("question_submitted") === "true";
-    setHasSubmittedBefore(hasSubmitted);
+    // Check if this device has already submitted a question today
+    const lastSubmissionDate = localStorage.getItem("last_submission_date");
+    const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
     
-    if (hasSubmitted) {
+    if (lastSubmissionDate === today) {
       const savedName = localStorage.getItem("submitted_name") || "";
       setSubmittedName(savedName);
       setIsSubmitted(true);
+      setHasSubmittedToday(true);
+    } else {
+      setIsSubmitted(false);
+      setHasSubmittedToday(false);
     }
   }, []);
   
@@ -41,13 +45,14 @@ const Questions = () => {
       // Send data using the context function
       await addQuestion(name, question);
       
-      // Mark this device as having submitted a question
-      localStorage.setItem("question_submitted", "true");
+      // Mark this device as having submitted a question today
+      const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      localStorage.setItem("last_submission_date", today);
       localStorage.setItem("submitted_name", name);
       
       setIsSubmitted(true);
       setSubmittedName(name);
-      setHasSubmittedBefore(true);
+      setHasSubmittedToday(true);
       
       toast({
         title: "Pregunta Enviada",
@@ -64,10 +69,7 @@ const Questions = () => {
   };
   
   const handleReset = () => {
-    // We won't allow resetting for new questions since we're limiting to one question per device
-    // This is just for UI navigation if needed
-    setIsSubmitted(true);
-    setHasSubmittedBefore(true);
+    setIsSubmitted(false);
   };
   
   return (
@@ -82,8 +84,8 @@ const Questions = () => {
             <span className="text-brand-purple">Preguntale</span> a Hedy
           </h1>
           <p className="text-gray-600 max-w-md mx-auto">
-            {hasSubmittedBefore 
-              ? "Ya has enviado tu pregunta. ¡Gracias por tu participación!" 
+            {hasSubmittedToday 
+              ? "Ya has enviado tu pregunta hoy. Vuelve mañana para hacer otra pregunta." 
               : "Comparte tus preguntas y Hedy las responderá durante el show."}
           </p>
         </motion.div>
@@ -102,7 +104,7 @@ const Questions = () => {
                 <ThankYouMessage 
                   name={submittedName} 
                   onReset={handleReset} 
-                  disableNewQuestion={true}
+                  disableNewQuestion={hasSubmittedToday}
                 />
               )}
             </Card>

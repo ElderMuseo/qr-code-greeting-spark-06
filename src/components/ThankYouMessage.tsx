@@ -58,7 +58,7 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
       {disableNewQuestion && (
         <div className="pt-4">
           <p className="text-sm text-gray-500 italic">
-            Solo se permite una pregunta por dispositivo.
+            Solo se permite una pregunta por día. Vuelve mañana para hacer otra pregunta.
           </p>
         </div>
       )}
