@@ -7,18 +7,22 @@ import { motion } from "framer-motion";
 interface ThankYouMessageProps {
   name: string;
   onReset: () => void;
+  disableNewQuestion?: boolean;
 }
 
-const ThankYouMessage = ({ name, onReset }: ThankYouMessageProps) => {
+const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYouMessageProps) => {
   const [counter, setCounter] = useState(10);
 
   useEffect(() => {
-    const timer = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
-    return () => {
-      if (timer) clearInterval(timer);
-      if (counter === 0) onReset();
-    };
-  }, [counter, onReset]);
+    // Only start the counter if we're not disabling new questions
+    if (!disableNewQuestion) {
+      const timer = counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
+      return () => {
+        if (timer) clearInterval(timer);
+        if (counter === 0) onReset();
+      };
+    }
+  }, [counter, onReset, disableNewQuestion]);
 
   return (
     <motion.div 
@@ -40,14 +44,24 @@ const ThankYouMessage = ({ name, onReset }: ThankYouMessageProps) => {
         Tu pregunta ha sido recibida. ¡Hedy la responderá pronto!
       </p>
       
-      <div className="pt-4">
-        <Button
-          onClick={onReset}
-          className="bg-brand-purple hover:bg-brand-dark-purple text-white py-6 px-8"
-        >
-          Hacer Otra Pregunta ({counter})
-        </Button>
-      </div>
+      {!disableNewQuestion && (
+        <div className="pt-4">
+          <Button
+            onClick={onReset}
+            className="bg-brand-purple hover:bg-brand-dark-purple text-white py-6 px-8"
+          >
+            Hacer Otra Pregunta ({counter})
+          </Button>
+        </div>
+      )}
+
+      {disableNewQuestion && (
+        <div className="pt-4">
+          <p className="text-sm text-gray-500 italic">
+            Solo se permite una pregunta por dispositivo.
+          </p>
+        </div>
+      )}
     </motion.div>
   );
 };

@@ -1,4 +1,4 @@
-// src/contexts/QuestionsContext.tsx
+
 import React, {
   createContext,
   useContext,
@@ -28,6 +28,7 @@ export interface Question {
   question: string;
   status: QuestionStatus;
   timestamp: Timestamp;
+  device_id?: string;
 }
 
 interface QuestionsContextType {
@@ -61,6 +62,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
           question: data.question,
           status: data.status as QuestionStatus,
           timestamp: data.timestamp as Timestamp,
+          device_id: data.device_id,
         };
       });
       setQuestions(docs);
@@ -72,12 +74,16 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
   // Añade una pregunta a Firestore
   const addQuestion = async (name: string, question: string) => {
     const col = collection(db, "questions");
+    const deviceId = localStorage.getItem("device_id");
+    
     await addDoc(col, {
       name,
       question,
       status: "pending",
       timestamp: serverTimestamp(),
+      device_id: deviceId
     });
+    
     toast({
       title: "Pregunta enviada",
       description: "Tu pregunta ha sido recibida. Gracias.",

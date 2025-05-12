@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,9 +7,10 @@ import { Send } from "lucide-react";
 
 interface QuestionFormProps {
   onSubmit: (name: string, question: string) => void;
+  disabled?: boolean;
 }
 
-const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
+const QuestionForm = ({ onSubmit, disabled = false }: QuestionFormProps) => {
   const [name, setName] = useState("");
   const [question, setQuestion] = useState("");
   const [nameError, setNameError] = useState(false);
@@ -55,6 +56,7 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
             if (e.target.value.trim()) setNameError(false);
           }}
           className={`bg-white/70 backdrop-blur-sm border-2 ${nameError ? 'border-red-400' : 'border-brand-light-purple'} focus:border-brand-purple transition-colors`}
+          disabled={disabled}
         />
         {nameError && (
           <p className="text-red-500 text-xs">Por favor, escribe tu nombre</p>
@@ -77,6 +79,7 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
             if (e.target.value.trim()) setQuestionError(false);
           }}
           className={`min-h-28 bg-white/70 backdrop-blur-sm resize-none border-2 ${questionError ? 'border-red-400' : 'border-brand-light-purple'} focus:border-brand-purple transition-colors`}
+          disabled={disabled}
         />
         {questionError && (
           <p className="text-red-500 text-xs">Por favor, escribe tu pregunta</p>
@@ -86,6 +89,7 @@ const QuestionForm = ({ onSubmit }: QuestionFormProps) => {
       <Button 
         type="submit"
         className="w-full bg-brand-purple hover:bg-brand-dark-purple text-white flex items-center justify-center gap-2 py-6 transition-all duration-300 shadow-md hover:shadow-lg"
+        disabled={disabled}
       >
         <Send className="h-5 w-5" />
         <span>Enviar Pregunta</span>
