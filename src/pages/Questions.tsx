@@ -73,17 +73,17 @@ const Questions = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/50 to-white px-4 py-10 sm:px-6">
+    <div className="min-h-screen bg-background px-4 py-10 sm:px-6">
       <div className="container max-w-4xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-            <span className="text-brand-purple">Preguntale</span> a Hedy
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <span className="text-primary">Preguntale</span> a Hedy
           </h1>
-          <p className="text-gray-600 max-w-md mx-auto">
+          <p className="text-muted-foreground max-w-md mx-auto">
             {hasSubmittedToday 
               ? "Ya has enviado tu pregunta hoy." 
               : "Comparte tus preguntas y Hedy puede que las responderá durante el show."}
@@ -97,7 +97,7 @@ const Questions = () => {
             transition={{ delay: 0.2 }}
             className="w-full max-w-md"
           >
-            <Card className="p-6 shadow-lg bg-white/90 backdrop-blur-sm">
+            <Card className="p-6 shadow-lg bg-card">
               {!isSubmitted ? (
                 <QuestionForm onSubmit={handleSubmit} />
               ) : (

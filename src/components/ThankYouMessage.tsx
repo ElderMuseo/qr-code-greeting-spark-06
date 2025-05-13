@@ -36,11 +36,11 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
         </div>
       </div>
       
-      <h2 className="text-2xl font-bold text-gray-800">
+      <h2 className="text-2xl font-bold text-foreground">
         ¡Gracias, {name}!
       </h2>
       
-      <p className="text-gray-600">
+      <p className="text-muted-foreground">
         Tu pregunta ha sido recibida. ¡Hedy la responderá pronto!
       </p>
       
@@ -48,7 +48,7 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
         <div className="pt-4">
           <Button
             onClick={onReset}
-            className="bg-brand-purple hover:bg-brand-dark-purple text-white py-6 px-8"
+            className="bg-primary hover:bg-brand-dark-purple text-white py-6 px-8"
           >
             Hacer Otra Pregunta ({counter})
           </Button>
@@ -57,7 +57,7 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
 
       {disableNewQuestion && (
         <div className="pt-4">
-          <p className="text-sm text-gray-500 italic">
+          <p className="text-sm text-muted-foreground italic">
             Solo se permite una pregunta por día. Vuelve mañana para hacer otra pregunta.
           </p>
         </div>

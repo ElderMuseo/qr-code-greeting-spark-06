@@ -16,7 +16,7 @@ const QRCodeDisplay = () => {
           width: 200,
           margin: 1,
           color: {
-            dark: '#9b87f5',
+            dark: '#055695', // Actualizado al nuevo color azul
             light: '#FFFFFF',
           },
         },
@@ -28,18 +28,18 @@ const QRCodeDisplay = () => {
   }, [questionsUrl]);
   
   return (
-    <div className="p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md space-y-4">
-      <h3 className="text-lg font-semibold text-center text-gray-800">
+    <div className="p-6 bg-card rounded-2xl shadow-md space-y-4">
+      <h3 className="text-lg font-semibold text-center text-foreground">
         Escanea para preguntar
       </h3>
       
       <div className="flex justify-center py-4">
-        <div className="p-4 border-4 border-brand-light-purple rounded-lg bg-white">
+        <div className="p-4 border-4 border-primary rounded-lg bg-white">
           <canvas ref={canvasRef} className="h-48 w-48" />
         </div>
       </div>
       
-      <div className="text-center text-sm text-gray-600">
+      <div className="text-center text-sm text-muted-foreground">
         <p>Escanea este código para enviar</p>
         <p>tus preguntas a Hedy</p>
       </div>
