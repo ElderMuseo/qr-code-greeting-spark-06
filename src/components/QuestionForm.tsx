@@ -55,7 +55,7 @@ const QuestionForm = ({ onSubmit, disabled = false }: QuestionFormProps) => {
             setName(e.target.value);
             if (e.target.value.trim()) setNameError(false);
           }}
-          className={`bg-white/70 backdrop-blur-sm border-2 ${nameError ? 'border-red-400' : 'border-brand-light-purple'} focus:border-brand-purple transition-colors`}
+          className={`bg-secondary border-2 ${nameError ? 'border-red-400' : 'border-primary'} focus:border-primary transition-colors`}
           disabled={disabled}
         />
         {nameError && (
@@ -78,7 +78,7 @@ const QuestionForm = ({ onSubmit, disabled = false }: QuestionFormProps) => {
             setQuestion(e.target.value);
             if (e.target.value.trim()) setQuestionError(false);
           }}
-          className={`min-h-28 bg-white/70 backdrop-blur-sm resize-none border-2 ${questionError ? 'border-red-400' : 'border-brand-light-purple'} focus:border-brand-purple transition-colors`}
+          className={`min-h-28 bg-secondary resize-none border-2 ${questionError ? 'border-red-400' : 'border-primary'} focus:border-primary transition-colors`}
           disabled={disabled}
         />
         {questionError && (
@@ -88,7 +88,7 @@ const QuestionForm = ({ onSubmit, disabled = false }: QuestionFormProps) => {
       
       <Button 
         type="submit"
-        className="w-full bg-brand-purple hover:bg-brand-dark-purple text-white flex items-center justify-center gap-2 py-6 transition-all duration-300 shadow-md hover:shadow-lg"
+        className="w-full bg-primary hover:bg-brand-dark-purple text-white flex items-center justify-center gap-2 py-6 transition-all duration-300 shadow-md hover:shadow-lg"
         disabled={disabled}
       >
         <Send className="h-5 w-5" />
