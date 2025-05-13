@@ -13,10 +13,22 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { Navigate } from "react-router-dom";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { isAuthenticated, logout } = useAdminAuth();
 
   // Estados locales para cada pestaña
@@ -78,12 +90,35 @@ const Admin = () => {
     });
   };
 
-  const handleDeleteAllQuestions = () => {
-    // Esta función estará vacía por ahora
-    toast({
-      title: "Función no implementada",
-      description: "La eliminación de preguntas se hará manualmente.",
-    });
+  const handleDeleteAllQuestions = async () => {
+    setIsDeleting(true);
+    try {
+      // Ejecutar script de Python por medio de fetch a nuestro endpoint
+      const response = await fetch('/api/delete-questions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al eliminar las preguntas');
+      }
+      
+      toast({
+        title: "Eliminación exitosa",
+        description: "Todas las preguntas han sido eliminadas.",
+      });
+    } catch (error) {
+      console.error('Error al eliminar preguntas:', error);
+      toast({
+        title: "Error",
+        description: "Hubo un problema al eliminar las preguntas.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // Redirect to login if not authenticated
@@ -92,15 +127,15 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-light-purple/30 to-white p-4">
+    <div className="min-h-screen bg-[#344552] p-4">
       <div className="container max-w-6xl mx-auto">
         <AdminHeader />
 
-        <Card className="mt-6 shadow-lg">
+        <Card className="mt-6 shadow-lg bg-[#263340] text-white border-[#055695]">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-2xl font-bold">Panel de Moderación</CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-300">
                 Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
               </CardDescription>
             </div>
@@ -108,22 +143,49 @@ const Admin = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]"
                 onClick={handleManualRefresh}
                 disabled={isRefreshing}
               >
                 <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span>Actualizar</span>
               </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                className="flex items-center gap-1"
-                onClick={handleDeleteAllQuestions}
-              >
-                <Trash2 className="h-4 w-4" />
-                <span>Borrar todo</span>
-              </Button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="flex items-center gap-1"
+                    disabled={isDeleting}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    <span>Borrar todo</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-[#263340] text-white border-[#055695]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-gray-300">
+                      Esta acción eliminará permanentemente todas las preguntas de la base de datos.
+                      Esta acción no se puede deshacer.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="bg-[#263340] text-white border-[#055695] hover:bg-[#344552]">
+                      Cancelar
+                    </AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleDeleteAllQuestions} 
+                      className="bg-red-600 text-white hover:bg-red-700"
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Eliminando..." : "Eliminar todo"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              
               <Button
                 variant="destructive"
                 size="sm"
@@ -141,17 +203,17 @@ const Admin = () => {
               value={activeTab}
               onValueChange={setActiveTab}
             >
-              <TabsList className="mb-6 grid grid-cols-3 w-full max-w-md">
-                <TabsTrigger value="pending" className="relative">
+              <TabsList className="mb-6 grid grid-cols-3 w-full max-w-md bg-[#263340]">
+                <TabsTrigger value="pending" className="relative data-[state=active]:bg-[#055695] text-white">
                   Pendientes
                   {pendingQuestions.length > 0 && (
-                    <span className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-brand-purple text-[10px] text-white">
+                    <span className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#055695] text-[10px] text-white">
                       {pendingQuestions.length}
                     </span>
                   )}
                 </TabsTrigger>
-                <TabsTrigger value="approved">Aprobadas</TabsTrigger>
-                <TabsTrigger value="rejected">Rechazadas</TabsTrigger>
+                <TabsTrigger value="approved" className="data-[state=active]:bg-[#055695] text-white">Aprobadas</TabsTrigger>
+                <TabsTrigger value="rejected" className="data-[state=active]:bg-[#055695] text-white">Rechazadas</TabsTrigger>
               </TabsList>
 
               <TabsContent value="pending">
