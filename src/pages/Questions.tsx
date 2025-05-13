@@ -85,8 +85,8 @@ const Questions = () => {
           </h1>
           <p className="text-gray-600 max-w-md mx-auto">
             {hasSubmittedToday 
-              ? "Ya has enviado tu pregunta hoy. Vuelve mañana para hacer otra pregunta." 
-              : "Comparte tus preguntas y Hedy las responderá durante el show."}
+              ? "Ya has enviado tu pregunta hoy." 
+              : "Comparte tus preguntas y Hedy puede que las responderá durante el show."}
           </p>
         </motion.div>
         

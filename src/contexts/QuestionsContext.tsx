@@ -1,4 +1,3 @@
-
 import React, {
   createContext,
   useContext,
@@ -14,7 +13,6 @@ import {
   addDoc,
   doc,
   updateDoc,
-  serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase";
@@ -28,6 +26,7 @@ export interface Question {
   question: string;
   status: QuestionStatus;
   timestamp: Timestamp;
+  timeTL: Timestamp;
   device_id?: string;
 }
 
@@ -62,6 +61,7 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
           question: data.question,
           status: data.status as QuestionStatus,
           timestamp: data.timestamp as Timestamp,
+          timeTL: data.timeTL as Timestamp,
           device_id: data.device_id,
         };
       });
@@ -75,27 +75,32 @@ export const QuestionsProvider = ({ children }: { children: ReactNode }) => {
   const addQuestion = async (name: string, question: string) => {
     const col = collection(db, "questions");
     const deviceId = localStorage.getItem("device_id");
-    
+
+    // Creamos el timestamp local y el timeTL (+1 hora)
+    const now = Timestamp.now();
+    const oneHourLater = Timestamp.fromMillis(now.toMillis() + 60 * 60 * 1000);
+
     await addDoc(col, {
       name,
       question,
       status: "pending",
-      timestamp: serverTimestamp(),
-      device_id: deviceId
+      timestamp: now,
+      timeTL: oneHourLater,
+      device_id: deviceId,
     });
-    
+
     toast({
       title: "Pregunta enviada",
       description: "Tu pregunta ha sido recibida. Gracias.",
     });
   };
 
-  // Actualiza el campo `status` de un documento
+  // Actualiza el campo status de un documento
   const updateQuestionStatus = async (id: string, status: QuestionStatus) => {
     const ref = doc(db, "questions", id);
     await updateDoc(ref, {
       status,
-      processedAt: serverTimestamp(),
+      processedAt: Timestamp.now(),
     });
     const statusMessage = {
       approved: "Pregunta aprobada",
