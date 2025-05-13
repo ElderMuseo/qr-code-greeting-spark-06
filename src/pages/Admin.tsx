@@ -1,3 +1,4 @@
+
 // src/pages/Admin.tsx
 
 import React, { useState, useEffect } from "react";
@@ -24,13 +25,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-// Importamos la función de eliminación que crearemos
+// Importamos la función de eliminación
 import { executeDeleteScript } from "@/utils/scriptExecutor";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteStatus, setDeleteStatus] = useState<string | null>(null);
   const { isAuthenticated, logout } = useAdminAuth();
 
   // Estados locales para cada pestaña
@@ -94,20 +96,23 @@ const Admin = () => {
 
   const handleDeleteAllQuestions = async () => {
     setIsDeleting(true);
+    setDeleteStatus("Iniciando proceso de borrado...");
     try {
-      // Ejecutar directamente el script de Python
+      // Ejecutar la función de borrado
       const result = await executeDeleteScript();
       
       if (result.success) {
+        setDeleteStatus(null);
         toast({
           title: "Eliminación exitosa",
-          description: "Todas las preguntas han sido eliminadas.",
+          description: `Se han eliminado ${result.deleted || 0} preguntas.`,
         });
       } else {
         throw new Error(result.error || 'Error desconocido');
       }
     } catch (error) {
       console.error('Error al eliminar preguntas:', error);
+      setDeleteStatus(null);
       toast({
         title: "Error",
         description: "Hubo un problema al eliminar las preguntas: " + (error instanceof Error ? error.message : String(error)),
@@ -157,7 +162,7 @@ const Admin = () => {
                     disabled={isDeleting}
                   >
                     <Trash2 className="h-4 w-4" />
-                    <span>Borrar todo</span>
+                    <span>{isDeleting ? "Borrando..." : "Borrar todo"}</span>
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="bg-[#263340] text-white border-[#055695]">
@@ -182,6 +187,12 @@ const Admin = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              
+              {deleteStatus && (
+                <div className="text-sm text-yellow-300 animate-pulse">
+                  {deleteStatus}
+                </div>
+              )}
               
               <Button
                 variant="destructive"
