@@ -10,11 +10,13 @@ try:
     # se manejarán automáticamente.
     # Si ejecutas esto localmente, necesitas descargar un archivo JSON de credenciales
     # desde la configuración de tu proyecto de Firebase/Google Cloud y apuntar a él:
-    cred = credentials.Certificate("src/cred.json")
-    firebase_admin.initialize_app(cred)
-
-    # Si ya has inicializado la app de Firebase en otro lugar de tu script:
-    # firebase_admin.initialize_app()
+    try:
+        # Intenta inicializar la app, pero si ya está inicializada, captura la excepción
+        cred = credentials.Certificate("src/cred.json")
+        firebase_admin.initialize_app(cred)
+    except ValueError:
+        # La app ya está inicializada o hay otro problema
+        pass
 
     # Obtén una referencia a la base de datos
     db = firestore.client()
@@ -25,14 +27,14 @@ try:
         Recibe una referencia a la colección y el tamaño del lote.
         """
         # Lee un lote de documentos
-        docs = coll_ref.limit(batch_size).stream() # O coll_ref.list_documents(page_size=batch_size)
+        docs = coll_ref.limit(batch_size).stream()
 
         deleted = 0
         # Itera sobre los documentos en el lote
         for doc in docs:
             print(f"Borrando documento {doc.id}")
             # Borra el documento actual
-            doc.reference.delete() # O doc.delete() si usas list_documents y obtienes referencias directas
+            doc.reference.delete()
             deleted = deleted + 1
 
         # Si borramos tantos documentos como el tamaño del lote,
@@ -63,3 +65,19 @@ try:
 except Exception as e:
     print(f"Error durante el proceso de borrado: {str(e)}", file=sys.stderr)
     sys.exit(1)
+
+# Esta función permite ejecutar el script desde JavaScript
+def run_deletion():
+    try:
+        # Obtén una referencia a la colección "questions"
+        questions_ref = db.collection("questions")
+        batch_size = 10
+        total_deleted = delete_collection(questions_ref, batch_size)
+        return {"success": True, "deleted": total_deleted}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+# Si este archivo se importa como un módulo, esta función estará disponible
+if __name__ == "__main__":
+    # Si se ejecuta directamente como script, el código ya se ha ejecutado arriba
+    pass

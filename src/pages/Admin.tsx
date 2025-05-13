@@ -1,4 +1,3 @@
-
 // src/pages/Admin.tsx
 
 import React, { useState, useEffect } from "react";
@@ -24,6 +23,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+// Importamos la función de eliminación que crearemos
+import { executeDeleteScript } from "@/utils/scriptExecutor";
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("pending");
@@ -93,27 +95,22 @@ const Admin = () => {
   const handleDeleteAllQuestions = async () => {
     setIsDeleting(true);
     try {
-      // Ejecutar script de Python por medio de fetch a nuestro endpoint
-      const response = await fetch('/api/delete-questions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      // Ejecutar directamente el script de Python
+      const result = await executeDeleteScript();
       
-      if (!response.ok) {
-        throw new Error('Error al eliminar las preguntas');
+      if (result.success) {
+        toast({
+          title: "Eliminación exitosa",
+          description: "Todas las preguntas han sido eliminadas.",
+        });
+      } else {
+        throw new Error(result.error || 'Error desconocido');
       }
-      
-      toast({
-        title: "Eliminación exitosa",
-        description: "Todas las preguntas han sido eliminadas.",
-      });
     } catch (error) {
       console.error('Error al eliminar preguntas:', error);
       toast({
         title: "Error",
-        description: "Hubo un problema al eliminar las preguntas.",
+        description: "Hubo un problema al eliminar las preguntas: " + (error instanceof Error ? error.message : String(error)),
         variant: "destructive",
       });
     } finally {
