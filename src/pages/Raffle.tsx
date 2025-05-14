@@ -149,7 +149,7 @@ const Raffle = () => {
 
               <Button
                 className="w-full"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/preguntas")}
               >
                 Volver al inicio
               </Button>
