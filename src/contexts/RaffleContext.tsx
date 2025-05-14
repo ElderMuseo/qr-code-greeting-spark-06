@@ -12,7 +12,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 interface RaffleContextType {
   startRaffle: () => Promise<void>;
@@ -40,21 +40,22 @@ export const RaffleProvider = ({ children }: { children: ReactNode }) => {
           setIsRaffleActive(data.active || false);
         } else {
           // Create the document if it doesn't exist
-          await setDoc(doc(db, "raffles", "current"), {
-            active: false,
-            winner: null,
-            timestamp: Timestamp.now(),
-          });
+          try {
+            await setDoc(doc(db, "raffles", "current"), {
+              active: false,
+              winner: null,
+              timestamp: Timestamp.now(),
+            });
+          } catch (error) {
+            console.error("Error creating raffle document:", error);
+          }
           setIsRaffleActive(false);
           setWinner(null);
         }
       } catch (error) {
         console.error("Error checking raffle status:", error);
-        toast({
-          title: "Error",
-          description: "No se pudo verificar el estado del sorteo.",
-          variant: "destructive",
-        });
+        // Don't show error toast as this might be due to permission issues
+        // which is normal for regular users
       } finally {
         setIsLoading(false);
       }
