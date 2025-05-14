@@ -123,7 +123,7 @@ const Raffle = () => {
                     ¡Felicidades!
                   </h2>
                   <p className="text-muted-foreground mb-6">
-                    Has ganado el sorteo. Acércate al escenario para reclamar tu premio.
+                    Has ganado el sorteo. Acércate al mostrador para reclamar tu premio.
                   </p>
                 </>
               ) : (
