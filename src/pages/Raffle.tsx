@@ -45,17 +45,11 @@ const Raffle = () => {
             description: "Has ganado el sorteo.",
           });
         } else {
-          // Not a winner, redirect to home
-          toast({
-            title: "Acceso denegado",
-            description: "No tienes acceso a esta página.",
-            variant: "destructive",
-          });
-          navigate("/");
+          // Not a winner, show raffle not started or not a winner
+          setIsWinner(false);
         }
       } catch (error) {
         console.error("Error checking winner status:", error);
-        navigate("/");
       } finally {
         setIsChecking(false);
       }
@@ -64,8 +58,8 @@ const Raffle = () => {
     checkWinnerStatus();
   }, [checkIfWinner, navigate, isAuthenticated]);
 
-  // If checking or not active, show loading
-  if (isChecking || !isRaffleActive) {
+  // If checking, show loading
+  if (isChecking) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -114,20 +108,41 @@ const Raffle = () => {
                 </div>
               </div>
 
-              <h2 className="text-2xl font-bold text-foreground mb-4">
-                ¡Felicidades!
-              </h2>
-
-              <p className="text-muted-foreground mb-6">
-                Has ganado el sorteo. Acércate al escenario para reclamar tu premio.
-              </p>
+              {!isRaffleActive ? (
+                <>
+                  <h2 className="text-2xl font-bold text-foreground mb-4">
+                    Sorteo no iniciado
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    El sorteo aún no ha sido iniciado. Vuelve más tarde para ver si has ganado.
+                  </p>
+                </>
+              ) : isWinner ? (
+                <>
+                  <h2 className="text-2xl font-bold text-foreground mb-4">
+                    ¡Felicidades!
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    Has ganado el sorteo. Acércate al escenario para reclamar tu premio.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold text-foreground mb-4">
+                    Lo sentimos
+                  </h2>
+                  <p className="text-muted-foreground mb-6">
+                    No has ganado el sorteo esta vez. ¡Gracias por participar!
+                  </p>
+                </>
+              )}
 
               {isAuthenticated && (
                 <div className="p-4 bg-muted rounded-md mb-6 text-left">
                   <h3 className="font-medium mb-2">Panel de administrador</h3>
                   <p className="text-sm text-muted-foreground">
-                    Los ganadores pueden acceder a esta página a través del botón 
-                    "¿Gané el sorteo?" en la página de preguntas.
+                    Los participantes pueden acceder a esta página a través del botón 
+                    "¿Gané el sorteo?" después de enviar una pregunta.
                   </p>
                 </div>
               )}

@@ -62,7 +62,7 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
           </Button>
         )}
 
-        {disableNewQuestion && isRaffleActive && (
+        {disableNewQuestion && (
           <Button
             onClick={handleCheckRaffle}
             className="bg-amber-600 hover:bg-amber-700 text-white py-6 px-8 w-full flex items-center justify-center gap-2"

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { db } from "@/firebase";
 import {
@@ -12,7 +11,7 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 interface RaffleContextType {
   startRaffle: () => Promise<void>;
