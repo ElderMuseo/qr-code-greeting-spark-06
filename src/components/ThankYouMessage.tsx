@@ -1,8 +1,10 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Award } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useRaffle } from "@/contexts/RaffleContext";
 
 interface ThankYouMessageProps {
   name: string;
@@ -12,6 +14,8 @@ interface ThankYouMessageProps {
 
 const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYouMessageProps) => {
   const [counter, setCounter] = useState(10);
+  const navigate = useNavigate();
+  const { isRaffleActive } = useRaffle();
 
   useEffect(() => {
     // Only start the counter if we're not disabling new questions
@@ -23,6 +27,10 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
       };
     }
   }, [counter, onReset, disableNewQuestion]);
+
+  const handleCheckRaffle = () => {
+    navigate("/sorteo");
+  };
 
   return (
     <motion.div 
@@ -44,24 +52,32 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
         Tu pregunta ha sido recibida. ¡Hedy la responderá pronto!
       </p>
       
-      {!disableNewQuestion && (
-        <div className="pt-4">
+      <div className="space-y-3 pt-4">
+        {!disableNewQuestion && (
           <Button
             onClick={onReset}
-            className="bg-primary hover:bg-brand-dark-purple text-white py-6 px-8"
+            className="bg-primary hover:bg-brand-dark-purple text-white py-6 px-8 w-full"
           >
             Hacer Otra Pregunta ({counter})
           </Button>
-        </div>
-      )}
+        )}
 
-      {disableNewQuestion && (
-        <div className="pt-4">
+        {disableNewQuestion && isRaffleActive && (
+          <Button
+            onClick={handleCheckRaffle}
+            className="bg-amber-600 hover:bg-amber-700 text-white py-6 px-8 w-full flex items-center justify-center gap-2"
+          >
+            <Award className="h-5 w-5" />
+            ¿Gané el sorteo?
+          </Button>
+        )}
+
+        {disableNewQuestion && (
           <p className="text-sm text-muted-foreground italic">
             Solo se permite una pregunta por día. Vuelve mañana para hacer otra pregunta.
           </p>
-        </div>
-      )}
+        )}
+      </div>
     </motion.div>
   );
 };

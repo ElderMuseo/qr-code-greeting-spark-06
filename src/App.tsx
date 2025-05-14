@@ -9,7 +9,9 @@ import Questions from "./pages/Questions";
 import Admin from "./pages/Admin";
 import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
+import Raffle from "./pages/Raffle";
 import { AdminAuthProvider } from "./contexts/AdminAuthContext";
+import { RaffleProvider } from "./contexts/RaffleContext";
 
 const queryClient = new QueryClient();
 
@@ -19,16 +21,19 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AdminAuthProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/preguntas" element={<Questions />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin" element={<Admin />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <RaffleProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/preguntas" element={<Questions />} />
+              <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/sorteo" element={<Raffle />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </RaffleProvider>
       </AdminAuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

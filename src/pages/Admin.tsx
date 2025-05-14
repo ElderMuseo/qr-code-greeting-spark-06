@@ -8,11 +8,12 @@ import { collection, onSnapshot, query, where, orderBy } from "firebase/firestor
 import { db } from "../firebase";
 import AdminQuestionList from "@/components/AdminQuestionList";
 import AdminHeader from "@/components/AdminHeader";
-import { RefreshCcw, LogOut, Trash2 } from "lucide-react";
+import { RefreshCcw, LogOut, Trash2, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
-import { Navigate } from "react-router-dom";
+import { useRaffle } from "@/contexts/RaffleContext";
+import { Navigate, useNavigate } from "react-router-dom";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -34,6 +35,8 @@ const Admin = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState<string | null>(null);
   const { isAuthenticated, logout } = useAdminAuth();
+  const { startRaffle, isRaffleActive, isLoading: isRaffleLoading } = useRaffle();
+  const navigate = useNavigate();
 
   // Estados locales para cada pestaña
   const [pendingQuestions, setPending] = useState<any[]>([]);
@@ -94,6 +97,21 @@ const Admin = () => {
     });
   };
 
+  const handleStartRaffle = async () => {
+    try {
+      await startRaffle();
+      // Navigate to raffle page to see the result
+      navigate("/sorteo");
+    } catch (error) {
+      console.error("Error starting raffle:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo iniciar el sorteo.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleDeleteAllQuestions = async () => {
     setIsDeleting(true);
     setDeleteStatus("Iniciando proceso de borrado...");
@@ -151,6 +169,17 @@ const Admin = () => {
               >
                 <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
                 <span>Actualizar</span>
+              </Button>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]"
+                onClick={handleStartRaffle}
+                disabled={isRaffleLoading || approvedQuestions.length === 0}
+              >
+                <Award className="h-4 w-4" />
+                <span>Iniciar Sorteo</span>
               </Button>
               
               <AlertDialog>
