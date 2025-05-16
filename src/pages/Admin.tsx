@@ -194,40 +194,18 @@ const Admin = () => {
       <div className="container max-w-6xl mx-auto">
         <AdminHeader />
 
-        <Card className="mt-6 shadow-lg bg-[#263340] text-white border-[#055695]">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-bold">Panel de Moderación</CardTitle>
-              <CardDescription className="text-gray-300">
+        <Card className="mt-6 shadow-lg bg-[#263340] text-white border-[#055695] relative">
+          <CardHeader className="flex flex-row items-start justify-between gap-4">
+            {/* IZQUIERDA: TÍTULO + DESCRIPCIÓN + (Actualizar/Sorteo) */}
+            <div className="flex flex-col items-start flex-1 min-w-0">
+              <CardTitle className="text-2xl font-bold">
+                Panel de Moderación
+              </CardTitle>
+              <CardDescription className="text-gray-300 mb-4">
                 Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
               </CardDescription>
-            </div>
-            {/* ---- NUEVO GRUPO DE BOTONES SEPARADOS ---- */}
-            <div className="flex flex-col gap-3 items-end min-w-[240px]">
-              {/* ZONA 1: IA */}
-              <div className="flex gap-2 flex-wrap">
-                <Button
-                  onClick={handleModerate}
-                  disabled={isModerating}
-                  variant="outline"
-                  className="bg-blue-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
-                >
-                  {isModerating ? "Moderando..." : "Moderar"}
-                </Button>
-                <Button
-                  onClick={handleResponder}
-                  disabled={isResponding}
-                  variant="outline"
-                  className="bg-green-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
-                >
-                  {isResponding ? "Respondiendo..." : "Responder"}
-                </Button>
-              </div>
-
-              <Separator className="w-full bg-[#055695]/30" />
-
-              {/* ZONA 2: Actualizar y Sorteo */}
-              <div className="flex gap-2 flex-wrap">
+              {/* --- Actualizar y Sorteo debajo del título/descripción --- */}
+              <div className="flex gap-2 flex-wrap mb-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -249,11 +227,84 @@ const Admin = () => {
                   <span>Iniciar Sorteo</span>
                 </Button>
               </div>
-
-              <Separator className="w-full bg-[#055695]/30" />
-
-              {/* ZONA 3: Administrativo */}
+            </div>
+            {/* DERECHA: Moderar y Responder (se quedan como están) */}
+            <div className="flex flex-col gap-3 items-end min-w-[220px]">
               <div className="flex gap-2 flex-wrap">
+                <Button
+                  onClick={handleModerate}
+                  disabled={isModerating}
+                  variant="outline"
+                  className="bg-blue-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
+                >
+                  {isModerating ? "Moderando..." : "Moderar"}
+                </Button>
+                <Button
+                  onClick={handleResponder}
+                  disabled={isResponding}
+                  variant="outline"
+                  className="bg-green-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
+                >
+                  {isResponding ? "Respondiendo..." : "Responder"}
+                </Button>
+              </div>
+              {deleteStatus && (
+                <div className="text-sm text-yellow-300 animate-pulse text-right">
+                  {deleteStatus}
+                </div>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="relative">
+            <div className="flex flex-col md:flex-row">
+              <div className="flex-1 min-w-0">
+                {/* Pestañas y preguntas al centro */}
+                <Tabs
+                  defaultValue="pending"
+                  value={activeTab}
+                  onValueChange={setActiveTab}
+                >
+                  <TabsList className="mb-6 grid grid-cols-3 w-full max-w-md bg-[#263340]">
+                    <TabsTrigger value="pending" className="relative data-[state=active]:bg-[#055695] text-white">
+                      Pendientes
+                      {pendingQuestions.length > 0 && (
+                        <span className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#055695] text-[10px] text-white">
+                          {pendingQuestions.length}
+                        </span>
+                      )}
+                    </TabsTrigger>
+                    <TabsTrigger value="approved" className="data-[state=active]:bg-[#055695] text-white">Aprobadas</TabsTrigger>
+                    <TabsTrigger value="rejected" className="data-[state=active]:bg-[#055695] text-white">Rechazadas</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="pending">
+                    <AdminQuestionList
+                      questions={pendingQuestions}
+                      emptyMessage="No hay preguntas pendientes."
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="approved">
+                    <AdminQuestionList
+                      questions={approvedQuestions}
+                      emptyMessage="No hay preguntas aprobadas."
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="rejected">
+                    <AdminQuestionList
+                      questions={rejectedQuestions}
+                      emptyMessage="No hay preguntas rechazadas."
+                    />
+                  </TabsContent>
+                </Tabs>
+              </div>
+              {/* INFERIOR IZQUIERDA: Borrar todo y Cerrar sesión (debajo de las preguntas) */}
+              {/* Esto es "sticky" si la vista es larga. Usamos min-w para layout. */}
+            </div>
+            <div className="flex flex-row mt-8">
+              <div className="flex flex-col gap-2 min-w-[220px]">
+                <Separator className="bg-[#055695]/30 mb-2" />
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
@@ -288,7 +339,6 @@ const Admin = () => {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-
                 <Button
                   variant="destructive"
                   size="sm"
@@ -299,54 +349,7 @@ const Admin = () => {
                   <span>Cerrar sesión</span>
                 </Button>
               </div>
-              {deleteStatus && (
-                <div className="text-sm text-yellow-300 animate-pulse text-right">
-                  {deleteStatus}
-                </div>
-              )}
             </div>
-            {/* ---- FIN DE GRUPOS DE BOTONES ---- */}
-          </CardHeader>
-          <CardContent>
-            <Tabs
-              defaultValue="pending"
-              value={activeTab}
-              onValueChange={setActiveTab}
-            >
-              <TabsList className="mb-6 grid grid-cols-3 w-full max-w-md bg-[#263340]">
-                <TabsTrigger value="pending" className="relative data-[state=active]:bg-[#055695] text-white">
-                  Pendientes
-                  {pendingQuestions.length > 0 && (
-                    <span className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#055695] text-[10px] text-white">
-                      {pendingQuestions.length}
-                    </span>
-                  )}
-                </TabsTrigger>
-                <TabsTrigger value="approved" className="data-[state=active]:bg-[#055695] text-white">Aprobadas</TabsTrigger>
-                <TabsTrigger value="rejected" className="data-[state=active]:bg-[#055695] text-white">Rechazadas</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="pending">
-                <AdminQuestionList
-                  questions={pendingQuestions}
-                  emptyMessage="No hay preguntas pendientes."
-                />
-              </TabsContent>
-
-              <TabsContent value="approved">
-                <AdminQuestionList
-                  questions={approvedQuestions}
-                  emptyMessage="No hay preguntas aprobadas."
-                />
-              </TabsContent>
-
-              <TabsContent value="rejected">
-                <AdminQuestionList
-                  questions={rejectedQuestions}
-                  emptyMessage="No hay preguntas rechazadas."
-                />
-              </TabsContent>
-            </Tabs>
           </CardContent>
         </Card>
       </div>
