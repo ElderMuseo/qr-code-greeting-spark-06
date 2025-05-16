@@ -1,4 +1,3 @@
-
 // src/pages/Admin.tsx
 
 import React, { useState, useEffect } from "react";
@@ -29,11 +28,16 @@ import {
 // Importamos la función de eliminación
 import { executeDeleteScript } from "@/utils/scriptExecutor";
 
+// Importamos las funciones para ejecutar scripts
+import { runModerationScript, runOllamaResponseScript } from "@/utils/scriptRunner";
+
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("pending");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteStatus, setDeleteStatus] = useState<string | null>(null);
+  const [isModerating, setIsModerating] = useState(false);
+  const [isResponding, setIsResponding] = useState(false);
   const { isAuthenticated, logout } = useAdminAuth();
   const { startRaffle, isRaffleActive, isLoading: isRaffleLoading } = useRaffle();
   const navigate = useNavigate();
@@ -141,6 +145,44 @@ const Admin = () => {
     }
   };
 
+  const handleModerate = async () => {
+    setIsModerating(true);
+    try {
+      const result = await runModerationScript();
+      toast({
+        title: result.success ? "Moderación completada" : "Error en la moderación",
+        description: result.output?.slice(0, 600) + (result.output?.length > 600 ? "..." : ""),
+        variant: result.success ? "default" : "destructive",
+      });
+    } catch (e: any) {
+      toast({
+        title: "Error al ejecutar moderación.py",
+        description: e?.message || String(e),
+        variant: "destructive",
+      });
+    }
+    setIsModerating(false);
+  };
+
+  const handleResponder = async () => {
+    setIsResponding(true);
+    try {
+      const result = await runOllamaResponseScript();
+      toast({
+        title: result.success ? "Respuestas generadas" : "Error al generar respuestas",
+        description: result.output?.slice(0, 600) + (result.output?.length > 600 ? "..." : ""),
+        variant: result.success ? "default" : "destructive",
+      });
+    } catch (e: any) {
+      toast({
+        title: "Error al ejecutar ollama_response.py",
+        description: e?.message || String(e),
+        variant: "destructive",
+      });
+    }
+    setIsResponding(false);
+  };
+
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/admin-login" replace />;
@@ -159,7 +201,25 @@ const Admin = () => {
                 Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
               </CardDescription>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              {/* NUEVOS BOTONES */}
+              <Button
+                onClick={handleModerate}
+                disabled={isModerating}
+                variant="outline"
+                className="bg-blue-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
+              >
+                {isModerating ? "Moderando..." : "Moderar"}
+              </Button>
+              <Button
+                onClick={handleResponder}
+                disabled={isResponding}
+                variant="outline"
+                className="bg-green-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
+              >
+                {isResponding ? "Respondiendo..." : "Responder"}
+              </Button>
+              {/* ... keep existing code (other header buttons: Actualizar, Iniciar Sorteo, ... ) */}
               <Button
                 variant="outline"
                 size="sm"
