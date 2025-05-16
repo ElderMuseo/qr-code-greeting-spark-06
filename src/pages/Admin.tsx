@@ -265,7 +265,7 @@ const Admin = () => {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-                <Button variant="destructive" size="sm" onClick={handleLogout} className="flex items-center gap-1 my-0 mx-0 px-0 py-0 text-right">
+                <Button variant="destructive" size="sm" onClick={handleLogout} className="flex items-center gap-1 my-0 mx-0 px-0 py-0 text-center">
                   <LogOut className="h-4 w-4" />
                   <span>Cerrar sesión</span>
                 </Button>
