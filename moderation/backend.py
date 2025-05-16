@@ -1,13 +1,16 @@
 
 from flask import Flask, request, jsonify
 import subprocess
+from flask_cors import CORS
+
+
 
 app = Flask(__name__)
-
+CORS(app)
 @app.route('/run-moderation', methods=['POST'])
 def run_moderation():
     try:
-        result = subprocess.run(['python3', 'moderation/moderation.py'], capture_output=True, text=True, check=True)
+        result = subprocess.run(['python3', 'moderation.py'], capture_output=True, text=True, check=True)
         return jsonify({"output": result.stdout, "success": True})
     except subprocess.CalledProcessError as e:
         return jsonify({"output": e.stdout + "\n" + e.stderr, "success": False}), 500
