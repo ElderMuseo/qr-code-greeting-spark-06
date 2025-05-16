@@ -1,0 +1,9 @@
+--------------------
+Nombre: David
+Pregunta: Cuantos metros cuadrados tiene el salón de actos
+Respuesta: El Salón de Actos del Museo Elder tiene una superficie de 200 metros cuadrados.
+--------------------
+Nombre: Gabriel
+Pregunta: cuanto cuesta la casa
+Respuesta: No está en el documento.
+--------------------

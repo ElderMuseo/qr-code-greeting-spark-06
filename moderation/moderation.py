@@ -9,7 +9,7 @@ import time
 # ------------------ CONFIGURACIÓN ------------------
 
 # API Key de Perspective API
-PERSPECTIVE_API_KEY = ''
+PERSPECTIVE_API_KEY = 'AIzaSyDumzxx0TpLUEcQl1R5HZvi7iTAQVG0UsQ'
 
 # Umbral de toxicidad para rechazar preguntas (0.0 a 1.0)
 TOXICITY_THRESHOLD = 0.3
