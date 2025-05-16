@@ -24,6 +24,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
 
 // Importamos la función de eliminación
 import { executeDeleteScript } from "@/utils/scriptExecutor";
@@ -201,98 +202,110 @@ const Admin = () => {
                 Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
               </CardDescription>
             </div>
-            <div className="flex gap-2 flex-wrap">
-              {/* NUEVOS BOTONES */}
-              <Button
-                onClick={handleModerate}
-                disabled={isModerating}
-                variant="outline"
-                className="bg-blue-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
-              >
-                {isModerating ? "Moderando..." : "Moderar"}
-              </Button>
-              <Button
-                onClick={handleResponder}
-                disabled={isResponding}
-                variant="outline"
-                className="bg-green-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
-              >
-                {isResponding ? "Respondiendo..." : "Responder"}
-              </Button>
-              {/* ... keep existing code (other header buttons: Actualizar, Iniciar Sorteo, ... ) */}
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]"
-                onClick={handleManualRefresh}
-                disabled={isRefreshing}
-              >
-                <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                <span>Actualizar</span>
-              </Button>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]"
-                onClick={handleStartRaffle}
-                disabled={isRaffleLoading || approvedQuestions.length === 0}
-              >
-                <Award className="h-4 w-4" />
-                <span>Iniciar Sorteo</span>
-              </Button>
-              
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="flex items-center gap-1"
-                    disabled={isDeleting}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    <span>{isDeleting ? "Borrando..." : "Borrar todo"}</span>
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="bg-[#263340] text-white border-[#055695]">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-gray-300">
-                      Esta acción eliminará permanentemente todas las preguntas de la base de datos.
-                      Esta acción no se puede deshacer.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="bg-[#263340] text-white border-[#055695] hover:bg-[#344552]">
-                      Cancelar
-                    </AlertDialogCancel>
-                    <AlertDialogAction 
-                      onClick={handleDeleteAllQuestions} 
-                      className="bg-red-600 text-white hover:bg-red-700"
+            {/* ---- NUEVO GRUPO DE BOTONES SEPARADOS ---- */}
+            <div className="flex flex-col gap-3 items-end min-w-[240px]">
+              {/* ZONA 1: IA */}
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  onClick={handleModerate}
+                  disabled={isModerating}
+                  variant="outline"
+                  className="bg-blue-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
+                >
+                  {isModerating ? "Moderando..." : "Moderar"}
+                </Button>
+                <Button
+                  onClick={handleResponder}
+                  disabled={isResponding}
+                  variant="outline"
+                  className="bg-green-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap"
+                >
+                  {isResponding ? "Respondiendo..." : "Responder"}
+                </Button>
+              </div>
+
+              <Separator className="w-full bg-[#055695]/30" />
+
+              {/* ZONA 2: Actualizar y Sorteo */}
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]"
+                  onClick={handleManualRefresh}
+                  disabled={isRefreshing}
+                >
+                  <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  <span>Actualizar</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]"
+                  onClick={handleStartRaffle}
+                  disabled={isRaffleLoading || approvedQuestions.length === 0}
+                >
+                  <Award className="h-4 w-4" />
+                  <span>Iniciar Sorteo</span>
+                </Button>
+              </div>
+
+              <Separator className="w-full bg-[#055695]/30" />
+
+              {/* ZONA 3: Administrativo */}
+              <div className="flex gap-2 flex-wrap">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="flex items-center gap-1"
                       disabled={isDeleting}
                     >
-                      {isDeleting ? "Eliminando..." : "Eliminar todo"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-              
+                      <Trash2 className="h-4 w-4" />
+                      <span>{isDeleting ? "Borrando..." : "Borrar todo"}</span>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-[#263340] text-white border-[#055695]">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-gray-300">
+                        Esta acción eliminará permanentemente todas las preguntas de la base de datos.
+                        Esta acción no se puede deshacer.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="bg-[#263340] text-white border-[#055695] hover:bg-[#344552]">
+                        Cancelar
+                      </AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleDeleteAllQuestions} 
+                        className="bg-red-600 text-white hover:bg-red-700"
+                        disabled={isDeleting}
+                      >
+                        {isDeleting ? "Eliminando..." : "Eliminar todo"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="flex items-center gap-1"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Cerrar sesión</span>
+                </Button>
+              </div>
               {deleteStatus && (
-                <div className="text-sm text-yellow-300 animate-pulse">
+                <div className="text-sm text-yellow-300 animate-pulse text-right">
                   {deleteStatus}
                 </div>
               )}
-              
-              <Button
-                variant="destructive"
-                size="sm"
-                className="flex items-center gap-1"
-                onClick={handleLogout}
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Cerrar sesión</span>
-              </Button>
             </div>
+            {/* ---- FIN DE GRUPOS DE BOTONES ---- */}
           </CardHeader>
           <CardContent>
             <Tabs
