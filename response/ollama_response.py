@@ -21,7 +21,6 @@ def _inicializar_firebase():
     cred_path = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'src/cred.json')
 
     try:
-        # Intento con credenciales explícitas
         cred = credentials.Certificate(cred_path)
         firebase_admin.initialize_app(cred, {'projectId': project_id})
         print("Firebase Admin SDK inicializado usando credenciales explícitas.")
@@ -67,7 +66,6 @@ def answer_question_from_doc(doc_path: str, question: str) -> str:
     """
     Envía el documento y la pregunta a Ollama y devuelve la respuesta limpia.
     """
-    # Leemos el documento
     with open(doc_path, encoding="utf-8") as f:
         doc = f.read()
 
@@ -75,8 +73,10 @@ def answer_question_from_doc(doc_path: str, question: str) -> str:
         "Eres una asistente que responde preguntas SÓLO basándote en el siguiente documento. "
         "Aunque la respuesta sea corta, no seas muy directa. "
         "Si la respuesta no puedes obtenerla del texto, di ‘No está en el documento’. "
-        "Asegurete de no inventarte preguntas tu, solo responder las que se te dan"
+        "Asegúrate de no inventarte preguntas, solo responder las que se te dan. "
         "Además, como solo vamos a usar el texto que generes, no hace falta que lo formatees."
+        "Si la respuesta sí puedes obtenerla del texto, di 'Respuesta encontrada: ' y la respuesta haciendo alusión a quien la preguntó, por ejemplo: 'David ha preguntado, ¿cuantos metros cuadrados tiene el salón de actos? Pues este cuenta con 200 metros cuadrados de superficie."
+        "Pero recuerda, si no la puedes sacar del docuemnto, tu respuesta debe ser solamente 'No está en el documento'"  
     )
 
     payload = {
@@ -97,16 +97,13 @@ def answer_question_from_doc(doc_path: str, question: str) -> str:
     data = resp.json()
 
     content = data["message"]["content"]
-    # Limpiamos cualquier bloque <think>...</think>
     clean = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL).strip()
     return clean
 
 # ——— Script principal ———
 
 def main():
-    # Ruta al documento que sirve de contexto para las respuestas
     doc_path = os.path.join("response", "document.txt")
-    # Archivo de salida
     out_path = os.path.join("response", "resultados.txt")
 
     preguntas_aprobadas = obtener_preguntas_aprobadas()
@@ -119,11 +116,15 @@ def main():
             print(f"Procesando pregunta de {nombre!r}...")
             respuesta = answer_question_from_doc(doc_path, pregunta)
 
-            out_file.write("--------------------\n")
-            out_file.write(f"Nombre: {nombre}\n")
-            out_file.write(f"Pregunta: {pregunta}\n")
-            out_file.write(f"Respuesta: {respuesta}\n")
-        out_file.write("--------------------\n")
+            # Si la respuesta está en el documento, línea narrativa:
+            if respuesta.lower().startswith("no está en el documento"):
+                # Semicolon-separated
+                out_file.write(f"{nombre};{pregunta}; {respuesta}\n")
+            else:
+                # Frase narrativa única
+                # Aseguramos que la respuesta termine sin punto duplicado
+                texto_resp = respuesta.rstrip(".")
+                out_file.write(f"{texto_resp}.\n")
 
     print(f"Proceso completado. Resultados guardados en: {out_path}")
 
