@@ -7,7 +7,7 @@ export const executeDeleteScript = async (): Promise<{ success: boolean; deleted
   try {
     console.log("Iniciando proceso de borrado de preguntas...");
     let totalDeleted = 0;
-    const batchSize = 500; // Tamaño de lote para borrar
+    const batchSize = 10; // Tamaño de lote para borrar
 
     // Función para borrar en lotes
     const deleteQueryBatch = async (batchSize: number): Promise<number> => {
