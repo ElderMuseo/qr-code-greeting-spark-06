@@ -164,8 +164,15 @@ const Admin = () => {
   if (!isAuthenticated) {
     return <Navigate to="/admin-login" replace />;
   }
-  return <div className="min-h-screen bg-[#344552] p-4">
+  return (
+    <div className="min-h-screen bg-[#344552] p-4">
       <div className="container max-w-6xl mx-auto">
+        {/* Theme Selector Top-Right */}
+        <React.Suspense fallback={null}>
+          {typeof window !== "undefined" && require("../components/ThemeSelector").default
+            ? React.createElement(require("../components/ThemeSelector").default)
+            : null}
+        </React.Suspense>
         <AdminHeader />
 
         <Card className="mt-6 shadow-lg bg-[#263340] text-white border-[#055695] relative">
@@ -274,6 +281,7 @@ const Admin = () => {
           </CardContent>
         </Card>
       </div>
-    </div>;
+    </div>
+  );
 };
 export default Admin;
