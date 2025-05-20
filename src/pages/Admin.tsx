@@ -15,7 +15,6 @@ import { useRaffle } from "@/contexts/RaffleContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-import ThemeSelector from "../components/ThemeSelector";
 
 // Importamos la función de eliminación
 import { executeDeleteScript } from "@/utils/scriptExecutor";
@@ -165,12 +164,8 @@ const Admin = () => {
   if (!isAuthenticated) {
     return <Navigate to="/admin-login" replace />;
   }
-  return (
-    <div className="min-h-screen bg-[#344552] p-4">
+  return <div className="min-h-screen bg-[#344552] p-4">
       <div className="container max-w-6xl mx-auto">
-        {/* Theme Selector Top-Right */}
-        <ThemeSelector />
-
         <AdminHeader />
 
         <Card className="mt-6 shadow-lg bg-[#263340] text-white border-[#055695] relative">
@@ -279,7 +274,6 @@ const Admin = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 };
 export default Admin;
