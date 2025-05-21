@@ -12,6 +12,7 @@ import Raffle from "./pages/Raffle";
 import { AdminAuthProvider } from "./contexts/AdminAuthContext";
 import { RaffleProvider } from "./contexts/RaffleContext";
 import QuestionsExpo from "./pages/QuestionsExpo";
+import Respuestas from "./pages/Respuestas";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/sorteo" element={<Raffle />} />
+              <Route path="/respuestas" element={<Respuestas />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
