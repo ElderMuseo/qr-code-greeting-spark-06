@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Raffle from "./pages/Raffle";
 import { AdminAuthProvider } from "./contexts/AdminAuthContext";
 import { RaffleProvider } from "./contexts/RaffleContext";
+import QuestionsExpo from "./pages/QuestionsExpo";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +26,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/preguntas" element={<Questions />} />
+              <Route path="/preguntas-exposición" element={<QuestionsExpo />} />
               <Route path="/admin-login" element={<AdminLogin />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/sorteo" element={<Raffle />} />
