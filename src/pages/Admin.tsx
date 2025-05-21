@@ -189,6 +189,21 @@ const Admin = () => {
     <div className="container max-w-6xl mx-auto">
       <AdminHeader />
 
+      {/* ENLACE DIRECTO A RESPUESTAS */}
+      <div className="flex justify-end mb-3">
+        <a
+          href="/respuestas"
+          className="inline-flex items-center px-3 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition font-medium shadow hover-scale"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <span className="mr-2">Ver respuestas</span>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
+      </div>
+
       {/* ============ TOGGLE QR ============== */}
       <div className="flex items-center gap-3 md:justify-end justify-center pb-1 pt-2">
         <Label htmlFor="qr-toggle" className="text-base font-medium text-foreground">
