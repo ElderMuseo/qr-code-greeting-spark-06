@@ -23,7 +23,6 @@ import { executeDeleteScript } from "@/utils/scriptExecutor";
 
 // Importamos las funciones para ejecutar scripts
 import { runModerationScript, runOllamaResponseScript } from "@/utils/scriptRunner";
-
 const QR_PREF_KEY = "questionQRPref"; // localStorage key
 
 const Admin = () => {
@@ -195,10 +194,8 @@ const Admin = () => {
         <Label htmlFor="qr-toggle" className="text-base font-medium text-foreground">
           QR lleva a:
         </Label>
-        <span className={`px-2 py-1 rounded ${!qrToExpo ? "bg-primary text-white" : ""} text-sm`}>
-          Preguntas
-        </span>
-        <Switch id="qr-toggle" checked={qrToExpo} onCheckedChange={() => setQrToExpo((v) => !v)} />
+        <span className={`px-2 py-1 rounded ${!qrToExpo ? "bg-primary text-white" : ""} text-sm`}>Hedy</span>
+        <Switch id="qr-toggle" checked={qrToExpo} onCheckedChange={() => setQrToExpo(v => !v)} />
         <span className={`px-2 py-1 rounded ${qrToExpo ? "bg-primary text-white" : ""} text-sm`}>
           Expo
         </span>
@@ -312,5 +309,4 @@ const Admin = () => {
     </div>
   </div>;
 };
-
 export default Admin;
