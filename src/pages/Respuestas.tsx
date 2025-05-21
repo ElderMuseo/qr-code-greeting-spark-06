@@ -6,11 +6,9 @@ import QuestionCarousel from "@/components/QuestionCarousel";
 const Respuestas = () => {
   const { questions } = useQuestions();
 
-  // Si en el futuro se quiere mostrar solo aprobadas, cambiar aquí el filtro.
-
   return (
-    <div className="min-h-screen bg-background py-10 px-3">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-background py-10 px-3">
+      <div className="w-full max-w-2xl flex flex-col justify-center items-center">
         <h1 className="text-3xl font-bold text-center mb-6 text-primary">
           Preguntas de la Exposición
         </h1>

@@ -14,16 +14,17 @@ interface QuestionCarouselProps {
 
 const QuestionCarousel: React.FC<QuestionCarouselProps> = ({ questions }) => {
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [animate, setAnimate] = useState<"in" | "out-left" | "out-right">("in");
+  const [direction, setDirection] = useState<"left" | "right">("right");
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  // Maneja la animación y el cambio de pregunta
-  const goTo = (idx: number) => {
-    if (idx === currentIdx) return;
-    setAnimate(idx > currentIdx ? "out-left" : "out-right");
+  const handleChange = (idx: number, dir: "left" | "right") => {
+    if (isAnimating || idx === currentIdx) return;
+    setDirection(dir);
+    setIsAnimating(true);
     setTimeout(() => {
       setCurrentIdx(idx);
-      setAnimate("in");
-    }, 250); // tiempo de la animación out
+      setIsAnimating(false);
+    }, 400); // duración de la animación
   };
 
   if (!questions.length) {
@@ -38,47 +39,87 @@ const QuestionCarousel: React.FC<QuestionCarouselProps> = ({ questions }) => {
   return (
     <div className="flex items-center justify-center gap-2 w-full select-none">
       <button
-        onClick={() => goTo(currentIdx - 1)}
-        disabled={!showPrev}
+        onClick={() => handleChange(currentIdx - 1, "left")}
+        disabled={!showPrev || isAnimating}
         className="transition-all p-2 rounded-full bg-background hover:bg-primary/10 text-primary disabled:text-gray-400 disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-primary"
         aria-label="Pregunta anterior"
       >
-        <ArrowLeft size={24} />
+        <ArrowLeft size={28} />
       </button>
-      <div className="flex-1 flex justify-center min-w-0">
-        {/* Animación de entrada/salida */}
+      <div className="flex-1 flex justify-center min-w-0 h-[180px] sm:h-[200px] md:h-[220px] items-center">
         <div
-          className={
-            `w-full max-w-xl
-            transition-all duration-300
-            ${animate === "in"
-              ? "animate-fade-in animate-scale-in"
-              : animate === "out-left"
-              ? "animate-fade-out translate-x-20 opacity-0 pointer-events-none"
-              : "animate-fade-out -translate-x-20 opacity-0 pointer-events-none"
-            }`
-          }
+          className={`w-full max-w-xl
+            transition-all duration-400
+            ${
+              isAnimating
+                ? direction === "right"
+                  ? "animate-slide-out-left opacity-0"
+                  : "animate-slide-out-right opacity-0"
+                : "animate-slide-in opacity-100"
+            }
+          `}
           key={questions[currentIdx].id}
-          style={{ minHeight: 120 }}
+          style={{ minHeight: 120, display: "flex" }}
         >
-          <Card className="w-full shadow-2xl animate-enter">
-            <div className="px-8 py-8 flex items-start">
-              <span className="rounded-full bg-primary/10 text-primary px-3 py-1 mr-4 text-sm font-semibold shrink-0">
-                Pregunta
-              </span>
-              <span className="text-lg text-foreground">{questions[currentIdx].question}</span>
-            </div>
+          <Card className="w-full shadow-2xl flex items-center justify-center min-h-[100px] h-full">
+            <span className="rounded-full bg-primary/10 text-primary px-4 py-2 mr-5 text-md font-semibold shrink-0 hidden sm:inline">
+              Pregunta
+            </span>
+            <span className="text-2xl lg:text-3xl text-foreground font-semibold leading-snug break-words">
+              {questions[currentIdx].question}
+            </span>
           </Card>
         </div>
       </div>
       <button
-        onClick={() => goTo(currentIdx + 1)}
-        disabled={!showNext}
+        onClick={() => handleChange(currentIdx + 1, "right")}
+        disabled={!showNext || isAnimating}
         className="transition-all p-2 rounded-full bg-background hover:bg-primary/10 text-primary disabled:text-gray-400 disabled:opacity-30 focus:outline-none focus:ring-2 focus:ring-primary"
         aria-label="Pregunta siguiente"
       >
-        <ArrowRight size={24} />
+        <ArrowRight size={28} />
       </button>
+      <style jsx>{`
+        @keyframes slide-in {
+          0% {
+            opacity: 0;
+            transform: translateY(40px) scale(0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        @keyframes slide-out-left {
+          0% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(-40px) scale(0.97);
+          }
+        }
+        @keyframes slide-out-right {
+          0% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(40px) scale(0.97);
+          }
+        }
+        .animate-slide-in {
+          animation: slide-in 0.4s cubic-bezier(.56,1.74,.63,.97);
+        }
+        .animate-slide-out-left {
+          animation: slide-out-left 0.4s cubic-bezier(.56,1.74,.63,.97);
+        }
+        .animate-slide-out-right {
+          animation: slide-out-right 0.4s cubic-bezier(.56,1.74,.63,.97);
+        }
+      `}</style>
     </div>
   );
 };
