@@ -65,7 +65,7 @@ const QuestionCarousel: React.FC<QuestionCarouselProps> = ({ questions }) => {
             <span className="rounded-full bg-primary/10 text-primary px-4 py-2 mr-5 text-md font-semibold shrink-0 hidden sm:inline">
               Pregunta
             </span>
-            <span className="text-2xl lg:text-3xl text-foreground font-semibold leading-snug break-words">
+            <span className="text-2xl lg:text-4xl xl:text-5xl text-foreground font-semibold leading-snug break-words">
               {questions[currentIdx].question}
             </span>
           </Card>
@@ -79,7 +79,7 @@ const QuestionCarousel: React.FC<QuestionCarouselProps> = ({ questions }) => {
       >
         <ArrowRight size={28} />
       </button>
-      <style jsx>{`
+      <style>{`
         @keyframes slide-in {
           0% {
             opacity: 0;
@@ -111,13 +111,13 @@ const QuestionCarousel: React.FC<QuestionCarouselProps> = ({ questions }) => {
           }
         }
         .animate-slide-in {
-          animation: slide-in 0.4s cubic-bezier(.56,1.74,.63,.97);
+          animation: slide-in 0.45s cubic-bezier(.56,1.74,.63,.97);
         }
         .animate-slide-out-left {
-          animation: slide-out-left 0.4s cubic-bezier(.56,1.74,.63,.97);
+          animation: slide-out-left 0.45s cubic-bezier(.56,1.74,.63,.97);
         }
         .animate-slide-out-right {
-          animation: slide-out-right 0.4s cubic-bezier(.56,1.74,.63,.97);
+          animation: slide-out-right 0.45s cubic-bezier(.56,1.74,.63,.97);
         }
       `}</style>
     </div>
