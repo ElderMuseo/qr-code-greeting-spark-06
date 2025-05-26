@@ -53,7 +53,7 @@ const QRCodeDisplay = () => {
   }, [qrUrl]);
   
   return (
-    <div className="p-6 bg-card rounded-2xl shadow-md space-y-4">
+    <div className="p-6 bg-black rounded-2xl shadow-md space-y-4">
       <h3 className="text-lg font-semibold text-center text-foreground">
         Escanea para preguntar
       </h3>
@@ -73,3 +73,4 @@ const QRCodeDisplay = () => {
 };
 
 export default QRCodeDisplay;
+
