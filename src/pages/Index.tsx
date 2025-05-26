@@ -4,17 +4,17 @@ import QRCodeDisplay from "@/components/QRCodeDisplay";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background px-4 py-10 sm:px-6 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-black px-4 py-16 sm:px-6 flex flex-col items-center justify-center">
       <div className="container max-w-4xl mx-auto text-center">
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            <span className="text-primary">Preguntale</span> a Hedy
+          <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+            <span className="text-primary">Pregúntale</span> a Hedy
           </h1>
-          <p className="text-muted-foreground max-w-md mx-auto">
+          <p className="text-muted-foreground max-w-xl mx-auto text-2xl">
             Escanea el código QR para hacer tus preguntas.
           </p>
         </motion.div>
