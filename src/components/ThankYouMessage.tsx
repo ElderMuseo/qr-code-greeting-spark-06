@@ -1,22 +1,24 @@
-
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Award } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useRaffle } from "@/contexts/RaffleContext";
-
 interface ThankYouMessageProps {
   name: string;
   onReset: () => void;
   disableNewQuestion?: boolean;
 }
-
-const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYouMessageProps) => {
+const ThankYouMessage = ({
+  name,
+  onReset,
+  disableNewQuestion = false
+}: ThankYouMessageProps) => {
   const [counter, setCounter] = useState(10);
   const navigate = useNavigate();
-  const { isRaffleActive } = useRaffle();
-
+  const {
+    isRaffleActive
+  } = useRaffle();
   useEffect(() => {
     // Only start the counter if we're not disabling new questions
     if (!disableNewQuestion) {
@@ -27,17 +29,16 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
       };
     }
   }, [counter, onReset, disableNewQuestion]);
-
   const handleCheckRaffle = () => {
     navigate("/sorteo");
   };
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="text-center space-y-6 w-full max-w-md"
-    >
+  return <motion.div initial={{
+    opacity: 0,
+    y: 20
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} className="text-center space-y-6 w-full max-w-md">
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
           <MessageSquare className="h-8 w-8 text-green-600" />
@@ -53,33 +54,17 @@ const ThankYouMessage = ({ name, onReset, disableNewQuestion = false }: ThankYou
       </p>
       
       <div className="space-y-3 pt-4">
-        {!disableNewQuestion && (
-          <Button
-            onClick={onReset}
-            className="bg-primary hover:bg-brand-dark-purple text-white py-6 px-8 w-full"
-          >
+        {!disableNewQuestion && <Button onClick={onReset} className="bg-primary hover:bg-brand-dark-purple text-white py-6 px-8 w-full">
             Hacer Otra Pregunta ({counter})
-          </Button>
-        )}
+          </Button>}
 
-        {disableNewQuestion && (
-          <Button
-            onClick={handleCheckRaffle}
-            className="bg-amber-600 hover:bg-amber-700 text-white py-6 px-8 w-full flex items-center justify-center gap-2"
-          >
+        {disableNewQuestion && <Button onClick={handleCheckRaffle} className="bg-amber-600 hover:bg-amber-700 text-white py-6 px-8 w-full flex items-center justify-center gap-2">
             <Award className="h-5 w-5" />
             ¿Gané el sorteo?
-          </Button>
-        )}
+          </Button>}
 
-        {disableNewQuestion && (
-          <p className="text-sm text-muted-foreground italic">
-            Solo se permite una pregunta por día. Vuelve mañana para hacer otra pregunta.
-          </p>
-        )}
+        {disableNewQuestion && <p className="text-sm text-muted-foreground italic">Solo se permite una pregunta por día.</p>}
       </div>
-    </motion.div>
-  );
+    </motion.div>;
 };
-
 export default ThankYouMessage;
