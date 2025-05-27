@@ -12,7 +12,7 @@ const Index = () => {
           className="text-center mb-14"
         >
           <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-            <span className="text-primary">Pregúntale</span> a Hedy
+            <span className="text-primary">Pregúntale</span> a la Casa
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-2xl">
             Escanea el código QR para hacer tus preguntas.

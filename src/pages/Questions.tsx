@@ -81,7 +81,7 @@ const Questions = () => {
           className="text-center mb-12"
         >
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            <span className="text-primary">Preguntale</span> a Hedy
+            <span className="text-primary">Preguntale</span> a la Casa
           </h1>
           <p className="text-muted-foreground max-w-md mx-auto">
             {hasSubmittedToday 
