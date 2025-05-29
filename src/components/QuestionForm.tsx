@@ -86,7 +86,7 @@ const QuestionForm = ({ onSubmit, disabled = false, isSubmitting = false }: Ques
         </label>
         <Textarea
           id="question"
-          placeholder="¿Qué quieres preguntar a Hedy?"
+          placeholder="Escribe aquí tu pregunta"
           value={question}
           onChange={(e) => {
             setQuestion(e.target.value);
