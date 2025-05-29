@@ -38,6 +38,7 @@ const Admin = () => {
   } = useAdminAuth();
   const {
     startRaffle,
+    stopRaffle,
     isRaffleActive,
     isLoading: isRaffleLoading
   } = useRaffle();
@@ -100,6 +101,20 @@ const Admin = () => {
       });
     }
   };
+
+  const handleStopRaffle = async () => {
+    try {
+      await stopRaffle();
+    } catch (error) {
+      console.error("Error stopping raffle:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo detener el sorteo.",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleDeleteAllQuestions = async () => {
     setIsDeleting(true);
     setDeleteStatus("Iniciando proceso de borrado...");
@@ -228,14 +243,21 @@ const Admin = () => {
             </CardDescription>
             {/* --- Actualizar y Sorteo debajo del título/descripción --- */}
             <div className="flex gap-2 flex-wrap mb-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleManualRefresh} disabled={isRefreshing}>
-                <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleManualRefresh} disabled={isRaffleLoading}>
+                <RefreshCcw className={`h-4 w-4 ${isRaffleLoading ? 'animate-spin' : ''}`} />
                 <span>Actualizar</span>
               </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleStartRaffle} disabled={isRaffleLoading || approvedQuestions.length === 0}>
-                <Award className="h-4 w-4" />
-                <span>Iniciar Sorteo</span>
-              </Button>
+              {!isRaffleActive ? (
+                <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleStartRaffle} disabled={isRaffleLoading || approvedQuestions.length === 0}>
+                  <Award className="h-4 w-4" />
+                  <span>Iniciar Sorteo</span>
+                </Button>
+              ) : (
+                <Button variant="outline" size="sm" className="flex items-center gap-1 bg-red-800 text-white border-red-600 hover:bg-red-700" onClick={handleStopRaffle} disabled={isRaffleLoading}>
+                  <Award className="h-4 w-4" />
+                  <span>Detener Sorteo</span>
+                </Button>
+              )}
             </div>
           </div>
           {/* DERECHA: Moderar y Responder (se quedan como están) */}

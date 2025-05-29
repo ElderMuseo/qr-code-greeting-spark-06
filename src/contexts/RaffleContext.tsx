@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { db } from "@/firebase";
 import {
@@ -16,6 +15,7 @@ import { toast } from "@/hooks/use-toast";
 
 interface RaffleContextType {
   startRaffle: () => Promise<void>;
+  stopRaffle: () => Promise<void>;
   checkIfWinner: (deviceId: string) => Promise<boolean>;
   winner: string | null;
   isRaffleActive: boolean;
@@ -140,6 +140,36 @@ export const RaffleProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Stop the current raffle
+  const stopRaffle = async () => {
+    setIsLoading(true);
+    try {
+      // Reset the raffle document
+      await updateDoc(doc(db, "raffles", "current"), {
+        active: false,
+        winner: null,
+        timestamp: Timestamp.now(),
+      });
+
+      setWinner(null);
+      setIsRaffleActive(false);
+
+      toast({
+        title: "Sorteo detenido",
+        description: "El sorteo ha sido detenido y limpiado correctamente.",
+      });
+    } catch (error) {
+      console.error("Error stopping raffle:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo detener el sorteo.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Check if a user is the winner
   const checkIfWinner = async (deviceId: string): Promise<boolean> => {
     if (!deviceId) return false;
@@ -161,6 +191,7 @@ export const RaffleProvider = ({ children }: { children: ReactNode }) => {
     <RaffleContext.Provider
       value={{
         startRaffle,
+        stopRaffle,
         checkIfWinner,
         winner,
         isRaffleActive,
