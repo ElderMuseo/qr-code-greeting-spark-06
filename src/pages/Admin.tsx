@@ -285,8 +285,8 @@ const Admin = () => {
             {/* INFERIOR IZQUIERDA: Borrar todo y Cerrar sesión (debajo de las preguntas) */}
             {/* Esto es "sticky" si la vista es larga. Usamos min-w para layout. */}
           </div>
-          <div className="flex flex-row mt-8">
-            <div className="flex flex-col gap-2 min-w-[220px]">
+          <div className="flex flex-row justify-between items-center mt-8">
+            <div className="flex flex-col gap-2">
               <Separator className="bg-[#055695]/30 mb-2" />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -313,7 +313,9 @@ const Admin = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
-              <Button variant="destructive" size="sm" onClick={handleLogout} className="flex items-center gap-1 my-0 mx-0 px-0 py-0 text-center">
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button variant="destructive" size="sm" onClick={handleLogout} className="flex items-center gap-1">
                 <LogOut className="h-4 w-4" />
                 <span>Cerrar sesión</span>
               </Button>
