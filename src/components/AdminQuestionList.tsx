@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuestions, Question, QuestionStatus } from "@/contexts/QuestionsContext";
@@ -6,10 +7,12 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
+import { QuestionListSkeleton, ButtonLoadingSpinner } from "@/components/LoadingStates";
 
 interface AdminQuestionListProps {
   questions: Question[];
   emptyMessage: string;
+  isLoading?: boolean;
 }
 
 // Helper para convertir Firestore Timestamp o Date a Date de JS
@@ -21,7 +24,7 @@ const getDate = (ts: unknown): Date => {
   return new Date(); // fallback
 };
 
-const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) => {
+const AdminQuestionList = ({ questions, emptyMessage, isLoading = false }: AdminQuestionListProps) => {
   const { updateQuestionStatus } = useQuestions();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
@@ -34,6 +37,10 @@ const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) 
     }
   };
 
+  if (isLoading) {
+    return <QuestionListSkeleton count={3} />;
+  }
+
   return (
     <div className="space-y-4">
       <AnimatePresence>
@@ -41,6 +48,7 @@ const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) 
           questions.map((question) => {
             const date = getDate(question.timestamp);
             const ago = formatDistanceToNow(date, { addSuffix: true, locale: es });
+            const isProcessing = processingId === question.id;
 
             return (
               <motion.div
@@ -51,13 +59,17 @@ const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) 
                 layout
                 transition={{ duration: 0.2 }}
               >
-                <Card className="bg-white/90 backdrop-blur-sm hover:shadow-md transition-shadow">
+                <Card className={`bg-white/90 backdrop-blur-sm hover:shadow-md transition-all duration-200 ${isProcessing ? 'ring-2 ring-primary/50' : ''}`}>
                   <CardContent className="pt-6">
                     <div className="flex justify-between items-start gap-4">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-800">
+                        <motion.h3 
+                          className="font-semibold text-gray-800"
+                          animate={isProcessing ? { opacity: [1, 0.7, 1] } : {}}
+                          transition={{ duration: 1, repeat: isProcessing ? Infinity : 0 }}
+                        >
                           {question.name}
-                        </h3>
+                        </motion.h3>
                         <p className="mt-2 text-gray-700">{question.question}</p>
                       </div>
                       <span className="text-xs text-gray-500">
@@ -72,21 +84,33 @@ const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) 
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                          disabled={processingId === question.id}
+                          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200"
+                          disabled={isProcessing}
                           onClick={() => handleStatusChange(question.id, "rejected")}
                         >
-                          <X className="h-4 w-4 mr-1" /> Rechazar
+                          {isProcessing ? (
+                            <ButtonLoadingSpinner />
+                          ) : (
+                            <>
+                              <X className="h-4 w-4 mr-1" /> Rechazar
+                            </>
+                          )}
                         </Button>
 
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700"
-                          disabled={processingId === question.id}
+                          className="border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700 transition-all duration-200"
+                          disabled={isProcessing}
                           onClick={() => handleStatusChange(question.id, "approved")}
                         >
-                          <Check className="h-4 w-4 mr-1" /> Aprobar
+                          {isProcessing ? (
+                            <ButtonLoadingSpinner />
+                          ) : (
+                            <>
+                              <Check className="h-4 w-4 mr-1" /> Aprobar
+                            </>
+                          )}
                         </Button>
                       </>
                     )}
@@ -95,10 +119,15 @@ const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) 
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={processingId === question.id}
+                        className="transition-all duration-200"
+                        disabled={isProcessing}
                         onClick={() => handleStatusChange(question.id, "pending")}
                       >
-                        Marcar como pendiente
+                        {isProcessing ? (
+                          <ButtonLoadingSpinner />
+                        ) : (
+                          "Marcar como pendiente"
+                        )}
                       </Button>
                     )}
 
@@ -106,10 +135,15 @@ const AdminQuestionList = ({ questions, emptyMessage }: AdminQuestionListProps) 
                       <Button
                         variant="outline"
                         size="sm"
-                        disabled={processingId === question.id}
+                        className="transition-all duration-200"
+                        disabled={isProcessing}
                         onClick={() => handleStatusChange(question.id, "pending")}
                       >
-                        Reconsiderar
+                        {isProcessing ? (
+                          <ButtonLoadingSpinner />
+                        ) : (
+                          "Reconsiderar"
+                        )}
                       </Button>
                     )}
                   </CardFooter>

@@ -12,6 +12,7 @@ const Questions = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState("");
   const [hasSubmittedToday, setHasSubmittedToday] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { addQuestion } = useQuestions();
   
   // Generate a device ID if it doesn't exist
@@ -38,6 +39,7 @@ const Questions = () => {
   
   const handleSubmit = async (name: string, question: string) => {
     console.log("Submitted data:", { name, question });
+    setIsSubmitting(true);
     
     try {
       const deviceId = localStorage.getItem("device_id") || uuidv4();
@@ -65,6 +67,8 @@ const Questions = () => {
         description: "Hubo un problema al enviar tu pregunta. Por favor, inténtalo de nuevo.",
         variant: "destructive"
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
   
@@ -99,7 +103,10 @@ const Questions = () => {
           >
             <Card className="p-6 shadow-lg bg-card">
               {!isSubmitted ? (
-                <QuestionForm onSubmit={handleSubmit} />
+                <QuestionForm 
+                  onSubmit={handleSubmit} 
+                  isSubmitting={isSubmitting}
+                />
               ) : (
                 <ThankYouMessage 
                   name={submittedName} 

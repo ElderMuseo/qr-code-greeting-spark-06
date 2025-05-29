@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 const QuestionsExpo = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [hasSubmittedToday, setHasSubmittedToday] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { addQuestion } = useQuestions();
 
   useEffect(() => {
@@ -32,6 +33,8 @@ const QuestionsExpo = () => {
   }, []);
 
   const handleSubmit = async (question: string) => {
+    setIsSubmitting(true);
+    
     try {
       await addQuestion("Anónimo", question);
 
@@ -52,6 +55,8 @@ const QuestionsExpo = () => {
         description: "Hubo un problema al enviar tu pregunta. Por favor, inténtalo de nuevo.",
         variant: "destructive"
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -86,7 +91,10 @@ const QuestionsExpo = () => {
           >
             <Card className="p-6 shadow-lg bg-card">
               {!isSubmitted ? (
-                <QuestionFormExpo onSubmit={handleSubmit} />
+                <QuestionFormExpo 
+                  onSubmit={handleSubmit} 
+                  isSubmitting={isSubmitting}
+                />
               ) : (
                 <ThankYouExpoMessage onReset={handleReset} disableNewQuestion={hasSubmittedToday} />
               )}
@@ -99,4 +107,3 @@ const QuestionsExpo = () => {
 };
 
 export default QuestionsExpo;
-
