@@ -1,33 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import QRCode from "qrcode";
-const QR_PREF_KEY = "questionQRPref";
+
 const QRCodeDisplay = () => {
   const baseUrl = window.location.origin;
-  // Leer preferencia de qué QR mostrar
-  const [qrUrl, setQrUrl] = useState(() => {
-    if (typeof window !== "undefined") {
-      const pref = localStorage.getItem(QR_PREF_KEY);
-      return pref === "expo" ? `${baseUrl}/preguntas-exposición` : `${baseUrl}/preguntas`;
-    }
-    return `${baseUrl}/preguntas`;
-  });
+  const qrUrl = `${baseUrl}/preguntas`;
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  // Escucha cambios de storage (si el admin cambia con el toggle)
-  useEffect(() => {
-    const updateQr = () => {
-      const pref = localStorage.getItem(QR_PREF_KEY);
-      setQrUrl(pref === "expo" ? `${baseUrl}/preguntas-exposición` : `${baseUrl}/preguntas`);
-    };
-    window.addEventListener("storage", updateQr);
-    // Y escucha por si el Admin cambia sin refrescar:
-    const checkPref = setInterval(updateQr, 1000);
-    return () => {
-      window.removeEventListener("storage", updateQr);
-      clearInterval(checkPref);
-    };
-    // eslint-disable-next-line
-  }, []);
   useEffect(() => {
     if (canvasRef.current) {
       QRCode.toCanvas(canvasRef.current, qrUrl, {
