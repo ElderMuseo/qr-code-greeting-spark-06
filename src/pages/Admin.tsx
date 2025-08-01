@@ -15,15 +15,13 @@ import { useRaffle } from "@/contexts/RaffleContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 // Importamos la función de eliminación
 import { executeDeleteScript } from "@/utils/scriptExecutor";
 
 // Importamos las funciones para ejecutar scripts
 import { runModerationScript, runOllamaResponseScript } from "@/utils/scriptRunner";
-const QR_PREF_KEY = "questionQRPref"; // localStorage key
+
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState("pending");
@@ -179,173 +177,148 @@ const Admin = () => {
     setIsResponding(false);
   };
 
-  // Estado del toggle QR
-  const [qrToExpo, setQrToExpo] = useState(() => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem(QR_PREF_KEY) === "expo";
-    }
-    return false;
-  });
-
-  // Persistir en localStorage cuando cambia el toggle
-  useEffect(() => {
-    if (qrToExpo) {
-      localStorage.setItem(QR_PREF_KEY, "expo");
-    } else {
-      localStorage.setItem(QR_PREF_KEY, "normal");
-    }
-  }, [qrToExpo]);
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/admin-login" replace />;
   }
-  return <div className="min-h-screen bg-background p-4">
-    <div className="container max-w-6xl mx-auto">
-      <AdminHeader />
+  
+  return (
+    <div className="min-h-screen bg-background p-4">
+      <div className="container max-w-6xl mx-auto">
+        <AdminHeader />
 
-      {/* ENLACE DIRECTO A RESPUESTAS */}
-      <div className="flex justify-end mb-3">
-        <a
-          href="/respuestas"
-          className="inline-flex items-center px-3 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition font-medium shadow hover-scale"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span className="mr-2">Ver respuestas</span>
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-          </svg>
-        </a>
-      </div>
+        {/* ENLACE DIRECTO A RESPUESTAS */}
+        <div className="flex justify-end mb-3">
+          <a
+            href="/respuestas"
+            className="inline-flex items-center px-3 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition font-medium shadow hover-scale"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="mr-2">Ver respuestas</span>
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+            </svg>
+          </a>
+        </div>
 
-      {/* ============ TOGGLE QR ============== */}
-      <div className="flex items-center gap-3 md:justify-end justify-center pb-1 pt-2">
-        <Label htmlFor="qr-toggle" className="text-base font-medium text-foreground">
-          QR lleva a:
-        </Label>
-        <span className={`px-2 py-1 rounded ${!qrToExpo ? "bg-primary text-white" : ""} text-sm`}>Hedy</span>
-        <Switch id="qr-toggle" checked={qrToExpo} onCheckedChange={() => setQrToExpo(v => !v)} />
-        <span className={`px-2 py-1 rounded ${qrToExpo ? "bg-primary text-white" : ""} text-sm`}>
-          Expo
-        </span>
-      </div>
-
-      <Card className="mt-6 shadow-lg bg-[#263340] text-white border-[#055695] relative">
-        <CardHeader className="flex flex-row items-start justify-between gap-4">
-          {/* IZQUIERDA: TÍTULO + DESCRIPCIÓN + (Actualizar/Sorteo) */}
-          <div className="flex flex-col items-start flex-1 min-w-0">
-            <CardTitle className="text-2xl font-bold">
-              Panel de Moderación
-            </CardTitle>
-            <CardDescription className="text-gray-300 mb-4">
-              Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
-            </CardDescription>
-            {/* --- Actualizar y Sorteo debajo del título/descripción --- */}
-            <div className="flex gap-2 flex-wrap mb-2">
-              <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleManualRefresh} disabled={isRaffleLoading}>
-                <RefreshCcw className={`h-4 w-4 ${isRaffleLoading ? 'animate-spin' : ''}`} />
-                <span>Actualizar</span>
-              </Button>
-              {!isRaffleActive ? (
-                <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleStartRaffle} disabled={isRaffleLoading || approvedQuestions.length === 0}>
-                  <Award className="h-4 w-4" />
-                  <span>Iniciar Sorteo</span>
+        <Card className="mt-6 shadow-lg bg-[#263340] text-white border-[#055695] relative">
+          <CardHeader className="flex flex-row items-start justify-between gap-4">
+            {/* IZQUIERDA: TÍTULO + DESCRIPCIÓN + (Actualizar/Sorteo) */}
+            <div className="flex flex-col items-start flex-1 min-w-0">
+              <CardTitle className="text-2xl font-bold">
+                Panel de Moderación
+              </CardTitle>
+              <CardDescription className="text-gray-300 mb-4">
+                Aquí puedes revisar, aprobar o rechazar preguntas para el show de Hedy
+              </CardDescription>
+              {/* --- Actualizar y Sorteo debajo del título/descripción --- */}
+              <div className="flex gap-2 flex-wrap mb-2">
+                <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleManualRefresh} disabled={isRaffleLoading}>
+                  <RefreshCcw className={`h-4 w-4 ${isRaffleLoading ? 'animate-spin' : ''}`} />
+                  <span>Actualizar</span>
                 </Button>
-              ) : (
-                <Button variant="outline" size="sm" className="flex items-center gap-1 bg-red-800 text-white border-red-600 hover:bg-red-700" onClick={handleStopRaffle} disabled={isRaffleLoading}>
-                  <Award className="h-4 w-4" />
-                  <span>Detener Sorteo</span>
-                </Button>
-              )}
-            </div>
-          </div>
-          {/* DERECHA: Moderar y Responder (se quedan como están) */}
-          <div className="flex flex-col gap-3 items-end min-w-[220px]">
-            <div className="flex gap-2 flex-wrap">
-              <Button onClick={handleModerate} disabled={isModerating} variant="outline" className="bg-blue-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap">
-                {isModerating ? "Moderando..." : "Moderar"}
-              </Button>
-              <Button onClick={handleResponder} disabled={isResponding} variant="outline" className="bg-green-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap">
-                {isResponding ? "Respondiendo..." : "Responder"}
-              </Button>
-            </div>
-            {deleteStatus && <div className="text-sm text-yellow-300 animate-pulse text-right">
-                {deleteStatus}
-              </div>}
-          </div>
-        </CardHeader>
-        <CardContent className="relative">
-          <div className="flex flex-col md:flex-row">
-            <div className="flex-1 min-w-0">
-              {/* Pestañas y preguntas al centro */}
-              <Tabs defaultValue="pending" value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="mb-6 grid grid-cols-3 w-full max-w-md bg-[#263340]">
-                  <TabsTrigger value="pending" className="relative data-[state=active]:bg-[#055695] text-white">
-                    Pendientes
-                    {pendingQuestions.length > 0 && <span className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#055695] text-[10px] text-white">
-                        {pendingQuestions.length}
-                      </span>}
-                  </TabsTrigger>
-                  <TabsTrigger value="approved" className="data-[state=active]:bg-[#055695] text-white">Aprobadas</TabsTrigger>
-                  <TabsTrigger value="rejected" className="data-[state=active]:bg-[#055695] text-white">Rechazadas</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="pending">
-                  <AdminQuestionList questions={pendingQuestions} emptyMessage="No hay preguntas pendientes." />
-                </TabsContent>
-
-                <TabsContent value="approved">
-                  <AdminQuestionList questions={approvedQuestions} emptyMessage="No hay preguntas aprobadas." />
-                </TabsContent>
-
-                <TabsContent value="rejected">
-                  <AdminQuestionList questions={rejectedQuestions} emptyMessage="No hay preguntas rechazadas." />
-                </TabsContent>
-              </Tabs>
-            </div>
-            {/* INFERIOR IZQUIERDA: Borrar todo y Cerrar sesión (debajo de las preguntas) */}
-            {/* Esto es "sticky" si la vista es larga. Usamos min-w para layout. */}
-          </div>
-          <div className="flex flex-row justify-between items-center mt-8">
-            <div className="flex flex-col gap-2">
-              <Separator className="bg-[#055695]/30 mb-2" />
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="sm" className="flex items-center gap-1" disabled={isDeleting}>
-                    <Trash2 className="h-4 w-4" />
-                    <span>{isDeleting ? "Borrando..." : "Borrar todo"}</span>
+                {!isRaffleActive ? (
+                  <Button variant="outline" size="sm" className="flex items-center gap-1 bg-[#263340] text-white border-[#055695] hover:bg-[#055695]" onClick={handleStartRaffle} disabled={isRaffleLoading || approvedQuestions.length === 0}>
+                    <Award className="h-4 w-4" />
+                    <span>Iniciar Sorteo</span>
                   </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="bg-[#263340] text-white border-[#055695]">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-gray-300">
-                      Esta acción eliminará permanentemente todas las preguntas de la base de datos.
-                      Esta acción no se puede deshacer.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="bg-[#263340] text-white border-[#055695] hover:bg-[#344552]">
-                      Cancelar
-                    </AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteAllQuestions} className="bg-red-600 text-white hover:bg-red-700" disabled={isDeleting}>
-                      {isDeleting ? "Eliminando..." : "Eliminar todo"}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                ) : (
+                  <Button variant="outline" size="sm" className="flex items-center gap-1 bg-red-800 text-white border-red-600 hover:bg-red-700" onClick={handleStopRaffle} disabled={isRaffleLoading}>
+                    <Award className="h-4 w-4" />
+                    <span>Detener Sorteo</span>
+                  </Button>
+                )}
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Button variant="destructive" size="sm" onClick={handleLogout} className="flex items-center gap-1">
-                <LogOut className="h-4 w-4" />
-                <span>Cerrar sesión</span>
-              </Button>
+            {/* DERECHA: Moderar y Responder (se quedan como están) */}
+            <div className="flex flex-col gap-3 items-end min-w-[220px]">
+              <div className="flex gap-2 flex-wrap">
+                <Button onClick={handleModerate} disabled={isModerating} variant="outline" className="bg-blue-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap">
+                  {isModerating ? "Moderando..." : "Moderar"}
+                </Button>
+                <Button onClick={handleResponder} disabled={isResponding} variant="outline" className="bg-green-800 text-white border-[#055695] hover:bg-[#055695] whitespace-nowrap">
+                  {isResponding ? "Respondiendo..." : "Responder"}
+                </Button>
+              </div>
+              {deleteStatus && <div className="text-sm text-yellow-300 animate-pulse text-right">
+                  {deleteStatus}
+                </div>}
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent className="relative">
+            <div className="flex flex-col md:flex-row">
+              <div className="flex-1 min-w-0">
+                {/* Pestañas y preguntas al centro */}
+                <Tabs defaultValue="pending" value={activeTab} onValueChange={setActiveTab}>
+                  <TabsList className="mb-6 grid grid-cols-3 w-full max-w-md bg-[#263340]">
+                    <TabsTrigger value="pending" className="relative data-[state=active]:bg-[#055695] text-white">
+                      Pendientes
+                      {pendingQuestions.length > 0 && <span className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#055695] text-[10px] text-white">
+                          {pendingQuestions.length}
+                        </span>}
+                    </TabsTrigger>
+                    <TabsTrigger value="approved" className="data-[state=active]:bg-[#055695] text-white">Aprobadas</TabsTrigger>
+                    <TabsTrigger value="rejected" className="data-[state=active]:bg-[#055695] text-white">Rechazadas</TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="pending">
+                    <AdminQuestionList questions={pendingQuestions} emptyMessage="No hay preguntas pendientes." />
+                  </TabsContent>
+
+                  <TabsContent value="approved">
+                    <AdminQuestionList questions={approvedQuestions} emptyMessage="No hay preguntas aprobadas." />
+                  </TabsContent>
+
+                  <TabsContent value="rejected">
+                    <AdminQuestionList questions={rejectedQuestions} emptyMessage="No hay preguntas rechazadas." />
+                  </TabsContent>
+                </Tabs>
+              </div>
+              {/* INFERIOR IZQUIERDA: Borrar todo y Cerrar sesión (debajo de las preguntas) */}
+              {/* Esto es "sticky" si la vista es larga. Usamos min-w para layout. */}
+            </div>
+            <div className="flex flex-row justify-between items-center mt-8">
+              <div className="flex flex-col gap-2">
+                <Separator className="bg-[#055695]/30 mb-2" />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm" className="flex items-center gap-1" disabled={isDeleting}>
+                      <Trash2 className="h-4 w-4" />
+                      <span>{isDeleting ? "Borrando..." : "Borrar todo"}</span>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="bg-[#263340] text-white border-[#055695]">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-gray-300">
+                        Esta acción eliminará permanentemente todas las preguntas de la base de datos.
+                        Esta acción no se puede deshacer.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="bg-[#263340] text-white border-[#055695] hover:bg-[#344552]">
+                        Cancelar
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteAllQuestions} className="bg-red-600 text-white hover:bg-red-700" disabled={isDeleting}>
+                        {isDeleting ? "Eliminando..." : "Eliminar todo"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button variant="destructive" size="sm" onClick={handleLogout} className="flex items-center gap-1">
+                  <LogOut className="h-4 w-4" />
+                  <span>Cerrar sesión</span>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  </div>;
+  );
 };
 export default Admin;
