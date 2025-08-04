@@ -1,7 +1,7 @@
 
-export const runModerationScript = async (): Promise<{ output: string; success: boolean }> => {
+export const runModerationScript = async (backendUrl: string = 'http://localhost:5000'): Promise<{ output: string; success: boolean }> => {
   try {
-    const resp = await fetch("http://localhost:5000/run-moderation", {
+    const resp = await fetch(`${backendUrl}/run-moderation`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -22,9 +22,9 @@ export const runModerationScript = async (): Promise<{ output: string; success: 
   }
 };
 
-export const runOllamaResponseScript = async (): Promise<{ output: string; success: boolean }> => {
+export const runOllamaResponseScript = async (backendUrl: string = 'http://localhost:5000'): Promise<{ output: string; success: boolean }> => {
   try {
-    const resp = await fetch("http://localhost:5000/run-ollama-response", {
+    const resp = await fetch(`${backendUrl}/run-ollama-response`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

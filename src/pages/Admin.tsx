@@ -12,9 +12,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useAdminAuth } from "@/contexts/AdminAuthContext";
 import { useRaffle } from "@/contexts/RaffleContext";
+import { useBackendConfig } from "@/contexts/BackendConfigContext";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
+import { BackendConfigSection } from "@/components/BackendConfigSection";
 
 // Importamos la función de eliminación
 import { executeDeleteScript } from "@/utils/scriptExecutor";
@@ -40,6 +42,7 @@ const Admin = () => {
     isRaffleActive,
     isLoading: isRaffleLoading
   } = useRaffle();
+  const { backendUrl } = useBackendConfig();
   const navigate = useNavigate();
 
   // Estados locales para cada pestaña
@@ -143,7 +146,7 @@ const Admin = () => {
   const handleModerate = async () => {
     setIsModerating(true);
     try {
-      const result = await runModerationScript();
+      const result = await runModerationScript(backendUrl);
       toast({
         title: result.success ? "Moderación completada" : "Error en la moderación",
         description: result.output?.slice(0, 600) + (result.output?.length > 600 ? "..." : ""),
@@ -161,7 +164,7 @@ const Admin = () => {
   const handleResponder = async () => {
     setIsResponding(true);
     try {
-      const result = await runOllamaResponseScript();
+      const result = await runOllamaResponseScript(backendUrl);
       toast({
         title: result.success ? "Respuestas generadas" : "Error al generar respuestas",
         description: result.output?.slice(0, 600) + (result.output?.length > 600 ? "..." : ""),
@@ -317,6 +320,8 @@ const Admin = () => {
             </div>
           </CardContent>
         </Card>
+
+        <BackendConfigSection />
       </div>
     </div>
   );
